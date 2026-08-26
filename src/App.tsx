@@ -315,13 +315,24 @@ function App() {
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
             </button>
 
-            <div className="text-right hidden sm:block">
-              <span className="block text-xs font-bold text-slate-700 dark:text-slate-200">{profile.nama_lengkap}</span>
-              <span className="text-[8px] font-bold text-slate-455 dark:text-slate-550 uppercase tracking-wider">{profile.role}</span>
-            </div>
-            <div className="h-8 w-8 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold uppercase select-none border border-white dark:border-slate-800 shadow-sm">
-              {profile.nama_lengkap ? profile.nama_lengkap.charAt(0) : profile.email.charAt(0)}
-            </div>
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`flex items-center gap-1.5 p-1 rounded-full transition-all active:scale-95 cursor-pointer border ${
+                activeTab === 'profile'
+                  ? 'bg-brand-500/15 border-brand-500/40'
+                  : 'bg-slate-200/40 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-800'
+              }`}
+              title="Buka Profil Saya"
+            >
+              <div className="text-right hidden sm:block pl-1">
+                <span className="block text-[10px] font-bold text-slate-700 dark:text-slate-200 leading-none">{profile.nama_lengkap || 'User'}</span>
+                <span className="text-[7px] font-bold text-slate-455 dark:text-slate-500 uppercase tracking-widest">{profile.role}</span>
+              </div>
+              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 pl-2 pr-0.5 uppercase tracking-wider sm:hidden">Profil</span>
+              <div className="h-6 w-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-bold uppercase select-none shadow-sm">
+                {profile.nama_lengkap ? profile.nama_lengkap.charAt(0) : profile.email.charAt(0)}
+              </div>
+            </button>
           </div>
         </header>
 
@@ -354,82 +365,76 @@ function App() {
 
         {/* Floating iOS-style Neumorphic Bottom Dock (Visible only on mobile/tablet) */}
         <nav className="lg:hidden fixed bottom-4 left-4 right-4 h-16 bg-[#f1f2f5]/90 dark:bg-[#1e293b]/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/80 rounded-2xl flex items-center justify-around z-40 px-2">
-          {/* Slot 1: Galeri */}
-          <button
-            onClick={() => setActiveTab('gallery')}
-            className={`w-12 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'gallery'
-                ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
-                : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
-            }`}
-          >
-            <LayoutGrid size={16} />
-            <span className="text-[8px] tracking-tight font-black uppercase">Galeri</span>
-          </button>
-          
-          {/* Slot 2: Bid Saya */}
-          <button
-            onClick={() => setActiveTab('my-bids')}
-            className={`w-12 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'my-bids'
-                ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
-                : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
-            }`}
-          >
-            <ShoppingBag size={16} />
-            <span className="text-[8px] tracking-tight font-black uppercase">Bids</span>
-          </button>
-
-          {/* Slot 3 (Center): Prominent circle Bid Action button */}
-          <button
-            onClick={() => {
-              setSelectedBidAssetId(null);
-              setIsBidModalOpen(true);
-            }}
-            className="w-14 h-14 -mt-7 bg-brand-500 hover:bg-brand-600 text-white rounded-full flex flex-col items-center justify-center transition-all cursor-pointer active:scale-90 border border-brand-400/30"
-          >
-            <Gavel size={18} />
-            <span className="text-[7px] tracking-tight font-black uppercase mt-0.5">Bid</span>
-          </button>
-
-          {/* Slot 4: Profil */}
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`w-12 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'profile'
-                ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
-                : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
-            }`}
-          >
-            <User size={16} />
-            <span className="text-[8px] tracking-tight font-black uppercase">Profil</span>
-          </button>
-
-          {/* Slot 5: Admin (if admin) or Log Out (if bidder) */}
           {profile.role === 'ADMIN' ? (
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`w-12 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'admin'
-                  ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
-                  : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
-              }`}
-            >
-              <LayoutDashboard size={16} />
-              <span className="text-[8px] tracking-tight font-black uppercase">Admin</span>
-            </button>
+            // #admin layout: [Galeri, Panel Administrator]
+            <>
+              {/* Button 1: Galeri */}
+              <button
+                onClick={() => setActiveTab('gallery')}
+                className={`w-28 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'gallery'
+                    ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
+                    : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
+                }`}
+              >
+                <LayoutGrid size={16} />
+                <span className="text-[9px] tracking-tight font-black uppercase">Galeri</span>
+              </button>
+
+              {/* Button 2: Panel Administrator */}
+              <button
+                onClick={() => setActiveTab('admin')}
+                className={`w-28 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'admin'
+                    ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
+                    : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
+                }`}
+              >
+                <LayoutDashboard size={16} />
+                <span className="text-[9px] tracking-tight font-black uppercase">Admin Panel</span>
+              </button>
+            </>
           ) : (
-            <button
-              onClick={async () => {
-                if (confirm('Apakah Anda yakin ingin keluar?')) {
-                  await supabase.auth.signOut();
-                }
-              }}
-              className="w-12 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer text-rose-500 hover:text-rose-600 border border-transparent"
-            >
-              <LogOut size={16} />
-              <span className="text-[8px] tracking-tight font-black uppercase">Keluar</span>
-            </button>
+            // #bidder layout: [Galeri, Tombol Bid, Bids(history)]
+            <>
+              {/* Button 1: Galeri */}
+              <button
+                onClick={() => setActiveTab('gallery')}
+                className={`w-16 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'gallery'
+                    ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
+                    : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
+                }`}
+              >
+                <LayoutGrid size={16} />
+                <span className="text-[8px] tracking-tight font-black uppercase">Galeri</span>
+              </button>
+
+              {/* Button 2 (Center): Prominent circle Bid Action button */}
+              <button
+                onClick={() => {
+                  setSelectedBidAssetId(null);
+                  setIsBidModalOpen(true);
+                }}
+                className="w-14 h-14 -mt-7 bg-brand-500 hover:bg-brand-600 text-white rounded-full flex flex-col items-center justify-center transition-all cursor-pointer active:scale-90 border border-brand-400/30"
+              >
+                <Gavel size={18} />
+                <span className="text-[7px] tracking-tight font-black uppercase mt-0.5">Bid</span>
+              </button>
+
+              {/* Button 3: Bids */}
+              <button
+                onClick={() => setActiveTab('my-bids')}
+                className={`w-16 h-12 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'my-bids'
+                    ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold shadow-[inset_2px_2px_4px_#c8cbd4,inset_-2px_-2px_4px_#ffffff] dark:shadow-[inset_2px_2px_4px_#0e141d,inset_-2px_-2px_4px_#2e3e59]'
+                    : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
+                }`}
+              >
+                <ShoppingBag size={16} />
+                <span className="text-[8px] tracking-tight font-black uppercase">Bids</span>
+              </button>
+            </>
           )}
         </nav>
 
