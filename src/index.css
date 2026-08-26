@@ -227,3 +227,49 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid rgba(37, 150, 190, 0.15) !important;
 }
 
+/* ─── Neumorphism design tokens (CSS Custom Properties) ─── */
+:root {
+  --neu-surface: #f1f2f5;
+  --neu-shadow-dark: #d5d8df;
+  --neu-shadow-light: #ffffff;
+  --neu-inset-dark: #c8cbd4;
+  --neu-inset-light: #ffffff;
+  --neu-border: rgba(255, 255, 255, 0.5);
+}
+
+.dark {
+  --neu-surface: #1e293b;
+  --neu-shadow-dark: #0e141d;
+  --neu-shadow-light: #2e3e59;
+  --neu-inset-dark: #0e141d;
+  --neu-inset-light: #2e3e59;
+  --neu-border: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Neumorphic Card (extruded, raised element) ─── */
+.neu-card {
+  background: var(--neu-surface);
+  border: 1px solid var(--neu-border);
+  box-shadow:
+    6px 6px 14px var(--neu-shadow-dark),
+    -6px -6px 14px var(--neu-shadow-light);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    4px 4px 10px var(--neu-shadow-dark),
+    -4px -4px 10px var(--neu-shadow-light);
+}
+
+/* ─── Neumorphic Inset (sunken, pressed element) ─── */
+.neu-inset {
+  background: var(--neu-surface);
+  border: 1px solid var(--neu-border);
+  box-shadow:
+    inset 3px 3px 6px var(--neu-inset-dark),
+    inset -3px -3px 6px var(--neu-inset-light);
+}
+
+
