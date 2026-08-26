@@ -602,10 +602,10 @@ export const AdminDashboard: React.FC = () => {
       </div>
  
       {/* Tabs Select */}
-      <div className="p-2 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[inset_3px_3px_6px_#c8cbd4,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0e141d,inset_-3px_-3px_6px_#2e3e59] flex flex-wrap gap-2.5">
+      <div className="p-2 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[inset_3px_3px_6px_#c8cbd4,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0e141d,inset_-3px_-3px_6px_#2e3e59] grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button
           onClick={() => setActiveTab('users')}
-          className={`py-2.5 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
             activeTab === 'users'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -615,7 +615,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('assets')}
-          className={`py-2.5 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
             activeTab === 'assets'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -625,7 +625,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('fields')}
-          className={`py-2.5 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
             activeTab === 'fields'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -635,7 +635,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('monitor')}
-          className={`py-2.5 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
             activeTab === 'monitor'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'

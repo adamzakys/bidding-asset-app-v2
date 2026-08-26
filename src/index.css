@@ -92,31 +92,38 @@ button, .btn-neu {
   outline: none;
 }
 
-button:not(:disabled):not(.active) {
+button:not(:disabled):not(.active):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]) {
   box-shadow: 4px 4px 8px #d5d8df, -4px -4px 8px #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.dark button:not(:disabled):not(.active) {
+.dark button:not(:disabled):not(.active):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]) {
   box-shadow: 4px 4px 8px #0e141d, -4px -4px 8px #2e3e59;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-button:not(:disabled):hover {
+/* Suppress shadows on buttons overlaying images or marked with .no-neu */
+.no-neu,
+button.no-neu {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button:not(:disabled):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]):hover {
   box-shadow: 2px 2px 4px #d5d8df, -2px -2px 4px #ffffff;
   transform: translateY(0.5px);
 }
 
-.dark button:not(:disabled):hover {
+.dark button:not(:disabled):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]):hover {
   box-shadow: 2px 2px 4px #0e141d, -2px -2px 4px #2e3e59;
 }
 
-button:not(:disabled):active, button.active {
+button:not(:disabled):not(.no-neu):active, button.active:not(.no-neu) {
   box-shadow: inset 3px 3px 6px #c8cbd4, inset -3px -3px 6px #ffffff !important;
   transform: translateY(1.5px);
 }
 
-.dark button:not(:disabled):active, .dark button.active {
+.dark button:not(:disabled):not(.no-neu):active, .dark button.active:not(.no-neu) {
   box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59 !important;
 }
 

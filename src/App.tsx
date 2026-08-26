@@ -279,9 +279,10 @@ function App() {
  
             <button
               onClick={handleSignOut}
-              className="btn-neu w-full py-3 hover:text-red-500 text-slate-650 dark:text-slate-450 flex items-center justify-center gap-2 font-bold text-xs"
+              className="w-full py-3 rounded-xl bg-rose-500/8 dark:bg-rose-500/10 border border-rose-500/20 dark:border-rose-500/15 text-rose-600 dark:text-rose-400 hover:bg-rose-500/15 hover:border-rose-500/30 flex items-center justify-center gap-2.5 font-bold text-xs transition-all cursor-pointer active:scale-[0.98]"
+              style={{ boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)' }}
             >
-              <LogOut size={14} />
+              <LogOut size={14} strokeWidth={2.5} />
               <span>Keluar Sesi</span>
             </button>
             <div className="text-center text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest pt-3">

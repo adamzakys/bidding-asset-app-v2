@@ -1042,7 +1042,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                     {/* Fullscreen Trigger */}
                     <button
                       onClick={() => setFullscreenImgUrl(images[detailImgIdx])}
-                      className="absolute top-3 left-3 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow z-10 transition cursor-pointer"
+                      className="no-neu absolute top-3 left-3 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 z-10 transition cursor-pointer"
                     >
                       <Maximize2 size={14} />
                     </button>
@@ -1052,13 +1052,13 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                       <>
                         <button
                           onClick={() => setDetailImgIdx((prev) => (prev - 1 + images.length) % images.length)}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow cursor-pointer transition-all duration-200"
+                          className="no-neu absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 cursor-pointer transition-all duration-200"
                         >
                           <ChevronLeft size={16} />
                         </button>
                         <button
                           onClick={() => setDetailImgIdx((prev) => (prev + 1) % images.length)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow cursor-pointer transition-all duration-200"
+                          className="no-neu absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 cursor-pointer transition-all duration-200"
                         >
                           <ChevronRight size={16} />
                         </button>

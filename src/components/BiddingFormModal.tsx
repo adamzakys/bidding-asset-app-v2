@@ -165,7 +165,7 @@ export const BiddingFormModal: React.FC<BiddingFormModalProps> = ({
 
         <button
           onClick={onClose}
-          className="btn-neu absolute top-4 right-4 text-slate-500 hover:text-rose-500 transition cursor-pointer text-xs font-black p-2 px-3 hidden sm:block"
+          className="no-neu absolute top-5 right-5 h-8 w-8 flex items-center justify-center rounded-xl text-slate-500 hover:text-rose-500 bg-slate-200/50 dark:bg-slate-800/50 transition cursor-pointer text-xs font-black hidden sm:flex"
         >
           ✕
         </button>
@@ -177,7 +177,7 @@ export const BiddingFormModal: React.FC<BiddingFormModalProps> = ({
           </h3>
           <button
             onClick={onClose}
-            className="text-xs font-black text-slate-555 hover:text-rose-500 cursor-pointer sm:hidden bg-transparent border-none"
+            className="no-neu text-xs font-black text-slate-555 hover:text-rose-500 cursor-pointer sm:hidden bg-transparent px-2 py-1"
           >
             Tutup
           </button>
