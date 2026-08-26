@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  
+  /* Brand/Primary Colors matching the original CSS #2596be */
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #2596be;
+  --color-brand-600: #1d7fa2;
+  --color-brand-650: #1e7fa3;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+  --color-brand-950: #082f49;
+
+  /* Custom backgrounds from original style.css */
+  --color-slate-50: #f1f2f5;
+  --color-slate-950: #1e293b;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #f1f2f5;
+  color: #1e2938;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #1e293b;
+  color: #f1f2f5;
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f2f5;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #0f172a;
+}
+
+/* Neumorphism flat panels & card structures */
+.glass-panel, .glass-card {
+  background: #f1f2f5;
+  border-radius: 20px;
+  box-shadow: 6px 6px 12px #d5d8df, -6px -6px 12px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-panel, .dark .glass-card {
+  background: #1e293b;
+  box-shadow: 6px 6px 12px #0e141d, -6px -6px 12px #2e3e59;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 8px #d5d8df, -4px -4px 8px #ffffff;
+}
+
+.dark .glass-card:hover {
+  box-shadow: 4px 4px 8px #0e141d, -4px -4px 8px #2e3e59;
+}
+
+/* Native Neumorphic button interaction states */
+button, .btn-neu {
+  border-radius: 12px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+button:not(:disabled):not(.active) {
+  box-shadow: 4px 4px 8px #d5d8df, -4px -4px 8px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dark button:not(:disabled):not(.active) {
+  box-shadow: 4px 4px 8px #0e141d, -4px -4px 8px #2e3e59;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+button:not(:disabled):hover {
+  box-shadow: 2px 2px 4px #d5d8df, -2px -2px 4px #ffffff;
+  transform: translateY(0.5px);
+}
+
+.dark button:not(:disabled):hover {
+  box-shadow: 2px 2px 4px #0e141d, -2px -2px 4px #2e3e59;
+}
+
+button:not(:disabled):active, button.active {
+  box-shadow: inset 3px 3px 6px #c8cbd4, inset -3px -3px 6px #ffffff !important;
+  transform: translateY(1.5px);
+}
+
+.dark button:not(:disabled):active, .dark button.active {
+  box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59 !important;
+}
+
+/* Inset Neumorphic Input and selector controls */
+input[type="text"], input[type="number"], input[type="password"], input[type="email"], input[type="tel"], input[type="datetime-local"], select, textarea {
+  box-shadow: inset 3px 3px 6px #d5d8df, inset -3px -3px 6px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  background-color: #f1f2f5 !important;
+  transition: all 0.2s ease;
+}
+
+.dark input[type="text"], .dark input[type="number"], .dark input[type="password"], .dark input[type="email"], .dark input[type="tel"], .dark input[type="datetime-local"], .dark select, .dark textarea {
+  box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background-color: #1e293b !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  box-shadow: inset 3px 3px 6px #d5d8df, inset -3px -3px 6px #ffffff, 0 0 0 2px rgba(37, 150, 190, 0.3) !important;
+}
+
+.dark input:focus, .dark select:focus, .dark textarea:focus {
+  box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59, 0 0 0 2px rgba(37, 150, 190, 0.3) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Custom Neumorphism Elements */
+.btn-brand-neu {
+  background-color: #2596be !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 8px rgba(37, 150, 190, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.dark .btn-brand-neu {
+  background-color: #2596be !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.btn-brand-neu:hover {
+  box-shadow: 2px 2px 4px rgba(37, 150, 190, 0.4), -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+  transform: translateY(0.5px);
+}
+
+.dark .btn-brand-neu:hover {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+.btn-brand-neu:active, .btn-brand-neu.active {
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(1.5px);
+}
+
+.dark .btn-brand-neu:active, .dark .btn-brand-neu.active {
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.35), inset -3px -3px 6px rgba(255, 255, 255, 0.05) !important;
+}
+
+.tab-active-neu {
+  box-shadow: inset 3px 3px 6px #c8cbd4, inset -3px -3px 6px #ffffff !important;
+  background-color: rgba(37, 150, 190, 0.08) !important;
+  border: 1px solid rgba(37, 150, 190, 0.2) !important;
+}
+
+.dark .tab-active-neu {
+  box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59 !important;
+  background-color: rgba(37, 150, 190, 0.12) !important;
+  border: 1px solid rgba(37, 150, 190, 0.15) !important;
+}
+

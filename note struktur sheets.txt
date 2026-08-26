@@ -1,0 +1,186 @@
+1. Tabel tb_users
+A1: email
+B1: nama_lengkap
+C1: nip_bms
+D1: no_wa
+E1: nik
+F1: link_surat_kepegawaian
+G1: link_surat_kesanggupan
+H1: link_ktp
+I1: role
+J1: status_akun
+
+2. Tabel tb_assets
+A1: asset_id
+B1: jenis_aset
+C1: nama_aset
+D1: deskripsi
+E1: gambar_url
+F1: harga_buka
+G1: waktu_mulai
+H1: waktu_selesai
+I1: status_lelang
+J1: kelipatan_bid
+
+3. Tabel tb_bids
+A1: bid_id
+B1: timestamp
+C1: asset_id
+D1: email
+E1: nominal_bid
+F1: status_bid
+
+4. Tabel view_active_bids
+A1: ID Aset
+B1: Nama Aset
+C1: Kategori
+D1: Harga Buka
+E1: Bid Tertinggi Saat Ini
+F1: Email Pemenang
+G1: Nama Pemenang
+H1: NIP BMS
+I1: No. WhatsApp
+J1: Sisa Waktu / Status
+
+A2 pada sheet/tabel 4 itu:
+=ARRAYFORMULA(
+  LET(
+    _bids_valid, IFERROR(FILTER(tb_bids!A2:F, tb_bids!F2:F = "VALID"), {"","","","","",""}),
+    _asset_ids, INDEX(_bids_valid,, 3),
+    _nominal_bids, INDEX(_bids_valid,, 5),
+    _emails, INDEX(_bids_valid,, 4),
+    
+    _max_bids, MAP(tb_assets!A2:A, LAMBDA(_id, 
+      IF(_id = "", "", IFERROR(MAX(FILTER(_nominal_bids, _asset_ids = _id)), 0))
+    )),
+    
+    _winner_emails, MAP(tb_assets!A2:A, _max_bids, LAMBDA(_id, _max, 
+      IF(_id = "", "", IFERROR(INDEX(FILTER(_emails, (_asset_ids = _id) * (_nominal_bids = _max)), 1), "-"))
+    )),
+    
+    _winner_names, IFERROR(VLOOKUP(_winner_emails, tb_users!A:D, 2, FALSE), "-"),
+    _winner_nips, IFERROR(VLOOKUP(_winner_emails, tb_users!A:C, 3, FALSE), "-"),
+    _winner_wa, IFERROR(VLOOKUP(_winner_emails, tb_users!A:D, 4, FALSE), "-"),
+    
+    _sisa_waktu, MAP(tb_assets!H2:H, LAMBDA(_deadline,
+      IF(_deadline = "", "", 
+        IF(_deadline < NOW(), 
+          "CLOSED", 
+          LET(
+            _diff, _deadline - NOW(),
+            _d, INT(_diff),
+            _h, INT(MOD(_diff * 24, 24)),
+            _m, INT(MOD(_diff * 1440, 60)),
+            IF(_d > 0, _d & " hari ", "") & _h & " jam " & _m & " menit"
+          )
+        )
+      )
+    )),
+    
+    _result, FILTER(
+      {tb_assets!A2:A, tb_assets!C2:C, tb_assets!B2:B, tb_assets!F2:F, _max_bids, _winner_emails, _winner_names, _winner_nips, _winner_wa, _sisa_waktu},
+      tb_assets!A2:A <> ""
+    ),
+    
+    _result
+  )
+)
+
+5. Tabel view_bidder_rank
+A1: Email Bidder
+B1: Nama Lengkap
+C1: NIP BMS
+D1: No. WhatsApp
+E1: Jumlah Bid
+F1: Total Nominal Bid
+
+A2 pada sheet/tabel 5 itu:
+=ARRAYFORMULA(
+  LET(
+    _bids_valid, IFERROR(FILTER(tb_bids!D2:E, tb_bids!F2:F = "VALID"), {"",""}),
+    _bidder_emails, INDEX(_bids_valid,, 1),
+    _bidder_nominals, INDEX(_bids_valid,, 2),
+    
+    _unique_emails, UNIQUE(_bidder_emails),
+    
+    _bid_counts, MAP(_unique_emails, LAMBDA(_email,
+      IF(_email = "", 0, COUNTIF(_bidder_emails, _email))
+    )),
+    
+    _total_spent, MAP(_unique_emails, LAMBDA(_email,
+      IF(_email = "", 0, SUMIF(_bidder_emails, _email, _bidder_nominals))
+    )),
+    
+    _names, IFERROR(VLOOKUP(_unique_emails, tb_users!A:D, 2, FALSE), "-"),
+    _nips, IFERROR(VLOOKUP(_unique_emails, tb_users!A:D, 3, FALSE), "-"),
+    _wa, IFERROR(VLOOKUP(_unique_emails, tb_users!A:D, 4, FALSE), "-"),
+    
+    _rekap, { _unique_emails, _names, _nips, _wa, _bid_counts, _total_spent },
+    _sorted, SORT(_rekap, 5, FALSE),
+    
+    _sorted
+  )
+)
+
+6. Tabel rekap_pemenang (Sheet Baru)
+A1: ID Aset
+B1: Nama Aset
+C1: Kategori
+D1: Harga Buka
+E1: Bid Pemenang (Nominal)
+F1: Email Pemenang
+G1: Nama Pemenang
+H1: NIP BMS
+I1: No. WhatsApp
+J1: NIK KTP
+K1: Link ID Card
+L1: Link Surat Kesanggupan
+M1: Link KTP
+N1: Status Lelang
+
+A2 pada sheet/tabel 6 itu:
+=ARRAYFORMULA(
+  LET(
+    _bids_valid, IFERROR(FILTER(tb_bids!A2:F, tb_bids!F2:F = "VALID"), {"","","","","",""}),
+    _asset_ids, INDEX(_bids_valid,, 3),
+    _nominal_bids, INDEX(_bids_valid,, 5),
+    _emails, INDEX(_bids_valid,, 4),
+    
+    _max_bids, MAP(tb_assets!A2:A, LAMBDA(_id, 
+      IF(_id = "", "", IFERROR(MAX(FILTER(_nominal_bids, _asset_ids = _id)), 0))
+    )),
+    
+    _winner_emails, MAP(tb_assets!A2:A, _max_bids, LAMBDA(_id, _max, 
+      IF(_id = "", "", IFERROR(INDEX(FILTER(_emails, (_asset_ids = _id) * (_nominal_bids = _max)), 1), "-"))
+    )),
+    
+    _winner_names, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 2, FALSE), "-"),
+    _winner_nips, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 3, FALSE), "-"),
+    _winner_wa, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 4, FALSE), "-"),
+    _winner_nik, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 5, FALSE), "-"),
+    _winner_idcard, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 6, FALSE), "-"),
+    _winner_kesanggupan, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 7, FALSE), "-"),
+    _winner_ktp, IFERROR(VLOOKUP(_winner_emails, tb_users!A:J, 8, FALSE), "-"),
+    
+    _status_lelang, MAP(tb_assets!H2:H, LAMBDA(_deadline,
+      IF(_deadline = "", "", IF(_deadline < NOW(), "CLOSED", "ACTIVE"))
+    )),
+    
+    _result, FILTER(
+      {tb_assets!A2:A, tb_assets!C2:C, tb_assets!B2:B, tb_assets!F2:F, _max_bids, _winner_emails, _winner_names, _winner_nips, _winner_wa, _winner_nik, _winner_idcard, _winner_kesanggupan, _winner_ktp, _status_lelang},
+      tb_assets!A2:A <> ""
+    ),
+    
+    _result
+  )
+)
+
+
+URL google sheet :
+https://docs.google.com/spreadsheets/d/1n-ZCjeVVdZKLFz1e73pvgPVugKbU22u-85ztuGBJxeU/edit?usp=sharing
+
+URL folder image :
+https://drive.google.com/drive/folders/1CuamVUwN3zrqiByh4TFhp9x4MVL1Avtr?usp=drive_link
+
+URL web app GAS :
+https://script.google.com/macros/s/AKfycbzEKhgNWhP6gV1z8ACI6v8e_tAF6Wa9svgzO8Ylh3hk0XMcPl_o9XU7bRH153g4X8XNtg/exec

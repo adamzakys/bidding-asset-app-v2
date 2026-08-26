@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #2596be;
+  --primary-hover: #1e7fa3;
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(15, 23, 42, 0.08);
+  --sidebar-bg: rgba(255, 255, 255, 0.9);
+  --sidebar-border: rgba(15, 23, 42, 0.08);
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --toast-bg: rgba(255, 255, 255, 0.95);
+  --glow-color: rgba(37, 150, 190, 0.1);
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+.dark {
+  --primary-color: #2596be;
+  --primary-hover: #1d7fa2;
+  --bg-color: #0b1329;
+  --text-color: #f8fafc;
+  --card-bg: rgba(30, 41, 59, 0.45);
+  --card-border: rgba(255, 255, 255, 0.05);
+  --sidebar-bg: rgba(15, 23, 42, 0.65);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --input-bg: #090f1d;
+  --input-border: #1e293b;
+  --input-text: #f8fafc;
+  --toast-bg: rgba(15, 23, 42, 0.85);
+  --glow-color: rgba(37, 150, 190, 0.15);
+  --scrollbar-track: #0f172a;
+  --scrollbar-thumb: #1e293b;
+  --scrollbar-thumb-hover: #334155;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Glassmorphism styling */
+.glass-panel {
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--sidebar-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37, 150, 190, 0.4);
+  box-shadow: 0 10px 25px -5px var(--glow-color), 0 8px 10px -6px var(--glow-color);
+}
+
+/* Inputs styling override for Light Mode variables */
+input:not([type="hidden"]), select, textarea {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-out {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Custom styles for google identity services button styling */
+.gsi-button-wrapper {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+
+/* Mobile bottom nav safe-area styling to prevent clipping by home indicators */
+#mobile-bottom-nav {
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Responsive bidding panel style to turn into a modal overlay on mobile screens */
+@media (max-width: 1023px) {
+  .bidding-panel-responsive {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 50 !important;
+    background-color: rgba(9, 15, 29, 0.85) !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .bidding-panel-responsive.active {
+    display: flex !important;
+    animation: fadeIn 0.25s ease-out forwards;
+  }
+  .bidding-panel-responsive > div {
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    border-radius: 1.5rem !important;
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  .bidding-panel-responsive {
+    display: block !important;
+  }
+}
+
+/* Fluid modal spring scale animation (iPhone-style) */
+@keyframes fluidModal {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(40px);
+  }
+  60% {
+    transform: scale(1.03) translateY(-4px);
+  }
+  85% {
+    transform: scale(0.98) translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fluid-modal {
+  animation: fluidModal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Lelang Internal BMS</title>
+    <link rel="icon" type="image/x-icon" href="asset/images/Logo-Berlian-Manyar-Sejahtera.png">
+    <meta name="description"
+        content="Aplikasi internal lelang aset PT. BMS dengan Google Authentication dan penawaran waktu nyata.">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#2596be', // Primary Color PT. Berlian Manyar Sejahtera
+                            600: '#1d7fa2',
+                            700: '#176683',
+                            800: '#135067',
+                            900: '#114456',
+                            950: '#0a2a35',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Identity Services SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Microsoft Authentication Library (MSAL) for JS -->
+    <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+
+    <!-- Client-side Image Compression Library Removed -->
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="asset/style.css">
+
+    <!-- API, Auth, and UI JavaScript Files -->
+    <script src="asset/js/api.js" defer></script>
+    <script src="asset/js/auth.js" defer></script>
+    <script src="asset/js/ui.js" defer></script>
+</head>
+
+<body
+    class="min-h-screen bg-slate-50 dark:bg-[#0b1329] text-slate-800 dark:text-slate-100 flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
+
+    <!-- Background decorative light glow elements (Visible only in Dark mode) -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden hidden dark:block">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-900/10 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow z-10 flex flex-col">
+
+        <!-- 1. LOGIN SCREEN -->
+        <section id="login-page"
+            class="flex-grow flex items-center justify-center p-4 md:p-8 hidden relative overflow-hidden min-h-[100dvh]">
+            <!-- Background Glowing Blobs for Login Screen -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                <div class="absolute top-[20%] left-[15%] w-72 h-72 rounded-full bg-brand-500/10 blur-[100px]"></div>
+                <div class="absolute bottom-[25%] right-[15%] w-80 h-80 rounded-full bg-indigo-500/15 blur-[120px]">
+                </div>
+            </div>
+
+            <div
+                class="w-full max-w-md md:max-w-5xl rounded-3xl bg-white/90 dark:bg-slate-950/60 md:bg-white/70 md:dark:bg-slate-950/40 border border-slate-200/50 dark:border-slate-800/50 shadow-2xl backdrop-blur-2xl flex flex-col md:flex-row overflow-hidden min-h-[500px] md:min-h-[550px] z-10 animate-fade-in-up">
+
+                <!-- Left side: Promotional/Intro Section (Hidden on mobile) -->
+                <div
+                    class="hidden md:flex md:w-1/2 bg-gradient-to-tr from-brand-950 via-brand-800 to-indigo-950 p-12 flex-col justify-between relative overflow-hidden border-r border-slate-250/10 dark:border-slate-800/20">
+                    <!-- Decorative grid overlay -->
+                    <div
+                        class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none">
+                    </div>
+                    <div
+                        class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand-500/20 blur-[100px] pointer-events-none">
+                    </div>
+
+                    <!-- Top Brand Logo -->
+                    <div class="flex items-center gap-3 z-10">
+                        <div
+                            class="bg-white p-1.5 rounded-xl flex items-center justify-center border border-white/20 shadow-md h-12 w-auto">
+                            <img src="asset/images/Logo-Berlian-Manyar-Sejahtera.png" alt="BMS Logo"
+                                class="h-8 object-contain">
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-xs font-bold text-white uppercase tracking-wider leading-none">PT.
+                                Berlian Manyar Sejahtera</span>
+                            <span class="text-[9px] text-slate-300 font-semibold tracking-wider">Bidding Portal</span>
+                        </div>
+                    </div>
+
+                    <!-- Center Slogan & Stats -->
+                    <div class="space-y-6 z-10">
+                        <h2 class="text-3xl font-extrabold text-white leading-tight tracking-tight">Bidding Management
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-indigo-300">System</span>
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed max-w-sm font-normal">
+                            Aplikasi internal terintegrasi untuk pengelolaan penawaran (bidding) lelang aset perusahaan
+                            PT. Berlian
+                            Manyar Sejahtera.
+                        </p>
+
+                    </div>
+
+                    <!-- Footer Copy -->
+                    <div class="z-10 text-[9px] text-slate-400 flex items-center justify-between">
+                        <span>PT. Berlian Manyar Sejahtera</span>
+                        <span>App Dev v1.3.0</span>
+                    </div>
+                </div>
+
+                <!-- Right side: The Login Box -->
+                <div
+                    class="w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-between bg-white/95 dark:bg-slate-900/90 md:bg-white/30 md:dark:bg-slate-900/10 backdrop-blur-xl">
+
+                    <!-- Top Spacer / Mobile Header -->
+                    <div
+                        class="flex items-center justify-between md:justify-end gap-2 md:mb-0 mb-8 border-b border-slate-100 dark:border-slate-800/60 pb-4 md:border-b-0 md:pb-0">
+                        <!-- Mobile Brand Logo -->
+                        <div class="flex md:hidden items-center gap-2">
+                            <div
+                                class="bg-white p-1 rounded-lg border border-slate-200/50 shadow-sm h-8 w-auto flex items-center justify-center">
+                                <img src="asset/images/Logo-Berlian-Manyar-Sejahtera.png" alt="BMS Logo"
+                                    class="h-6 object-contain">
+                            </div>
+                            <div class="text-left">
+                                <span
+                                    class="block text-[10px] font-bold text-slate-800 dark:text-white uppercase tracking-wider leading-none">PT.
+                                    Berlian Manyar Sejahtera</span>
+                                <span
+                                    class="text-[8px] text-slate-450 dark:text-slate-500 font-semibold tracking-wider">Bidding
+                                    Portal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center Login Form -->
+                    <div class="max-w-sm w-full mx-auto space-y-6 my-auto text-center md:text-left">
+                        <div
+                            class="mx-auto md:mx-0 mb-4 max-h-16 flex items-center justify-center md:justify-start relative">
+                            <div
+                                class="absolute inset-0 bg-brand-500/10 dark:bg-brand-500/20 blur-xl rounded-full w-24 h-16 mx-auto md:mx-0 -z-10">
+                            </div>
+                            <img src="asset/images/Logo-Berlian-Manyar-Sejahtera.png" alt="BMS Logo"
+                                class="h-16 object-contain z-10"
+                                onerror="this.style.display='none'; document.getElementById('fallback-right-logo').style.display='flex';">
+                            <div id="fallback-right-logo"
+                                class="hidden w-16 h-16 bg-gradient-to-tr from-brand-500 to-indigo-600 rounded-2xl items-center justify-center shadow-lg shadow-brand-500/25 text-white font-extrabold text-2xl z-10">
+                                BMS</div>
+                        </div>
+
+                        <div>
+                            <h1
+                                class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight leading-tight mb-2">
+                                Sistem Lelang Internal
+                            </h1>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                Silakan masuk menggunakan akun Microsoft korporat Anda untuk mulai
+                                berpartisipasi dalam lelang aset aktif.
+                            </p>
+                        </div>
+
+                        <!-- Auth Buttons Wrapper -->
+                        <div class="space-y-3">
+                            <div
+                                class="p-3.5 rounded-2xl bg-white/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-850 flex flex-col gap-3 min-h-[60px] relative overflow-hidden shadow-sm">
+
+                                <!-- External Login Info -->
+                                <div id="external-login-info"
+                                    class="hidden text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-center pt-1">
+                                    Login Eksternal (Publik) di Sini:
+                                </div>
+
+                                <!-- Google Sign-In Button -->
+                                <div id="google-signin-btn" class="w-full"></div>
+
+                                <!-- Divider "atau" -->
+                                <div id="or-divider-container" class="flex items-center gap-2 w-full my-0.5">
+                                    <div class="h-[1px] bg-slate-200 dark:bg-slate-800 flex-grow"></div>
+                                    <span
+                                        class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">atau</span>
+                                    <div class="h-[1px] bg-slate-200 dark:bg-slate-800 flex-grow"></div>
+                                </div>
+
+                                <!-- Microsoft Sign-In Button -->
+                                <button id="microsoft-signin-btn" type="button"
+                                    class="w-full flex items-center justify-center gap-2.5 px-4 py-2 bg-[#2f2f2f] hover:bg-[#202020] dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-semibold text-xs transition duration-200 shadow-sm border border-transparent dark:border-slate-200 min-h-[40px]">
+                                    <svg class="h-4 w-4" viewBox="0 0 23 23" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0H11V11H0V0Z" fill="#F25022" />
+                                        <path d="M12 0H23V11H12V0Z" fill="#7FBA00" />
+                                        <path d="M0 12H11V23H0V12Z" fill="#00A4EF" />
+                                        <path d="M12 12H23V23H12V12Z" fill="#FFB900" />
+                                    </svg>
+                                    <span>Masuk dengan Microsoft</span>
+                                </button>
+
+                                <!-- Loading State Overlay -->
+                                <div id="google-signin-loading"
+                                    class="hidden absolute inset-0 bg-white dark:bg-slate-950 backdrop-blur-sm rounded-2xl flex items-center justify-center gap-2.5 text-xs font-semibold text-brand-500">
+                                    <svg class="animate-spin h-4 w-4 text-brand-500" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    <span id="google-signin-loading-text">Menghubungkan...</span>
+                                </div>
+                            </div>
+                            <span class="block text-[10px] text-slate-400 text-center dark:text-slate-500">
+                                Pastikan menggunakan email kantor dengan domain resmi perusahaan.
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom copyright for mobile -->
+                    <div class="text-[9px] text-slate-400 text-center mt-8 md:mt-0">
+                        Bidding Management System &copy; 2026 PT. Berlian Manyar Sejahtera. All rights reserved.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. REGISTRATION SCREEN -->
+        <section id="register-page" class="flex-grow flex items-center justify-center p-6 hidden">
+            <div
+                class="w-full max-w-lg p-8 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-2xl backdrop-blur-xl">
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Lengkapi Registrasi Akun</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Akun Anda belum terdaftar di database
+                    penawar.
+                    Silakan lengkapi data profil dan unggah dokumen persyaratan (PDF) di bawah untuk mengajukan
+                    pendaftaran.</p>
+
+                <!-- Google Profile Quick Review -->
+                <div
+                    class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 mb-6">
+                    <img id="reg-avatar" src="" alt="Google Avatar"
+                        class="w-12 h-12 rounded-full border border-slate-250 dark:border-slate-700 shadow-md">
+                    <div>
+                        <h3 id="reg-name-display" class="text-sm font-bold text-slate-800 dark:text-slate-200">-</h3>
+                        <p id="reg-email-display" class="text-xs text-slate-500 dark:text-slate-400">-</p>
+                    </div>
+                </div>
+
+                <!-- Form Registration -->
+                <form id="register-form" class="space-y-4">
+                    <!-- Hidden input for email (locked) -->
+                    <input type="hidden" id="reg-email" name="email">
+
+                    <div>
+                        <label for="reg-name"
+                            class="block text-xs font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">Nama
+                            Lengkap</label>
+                        <input type="text" id="reg-name" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition"
+                            placeholder="Nama lengkap sesuai KTP/ID Card">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="reg-nip"
+                                class="block text-xs font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">NIP
+                                BMS</label>
+                            <input type="text" id="reg-nip" required
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition"
+                                placeholder="Contoh: BMS-12345">
+                        </div>
+
+                        <div>
+                            <label for="reg-whatsapp"
+                                class="block text-xs font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">No.
+                                WhatsApp Aktif</label>
+                            <input type="tel" id="reg-whatsapp" required
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition"
+                                placeholder="Contoh: 081234567890">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="reg-nik"
+                            class="block text-xs font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">NIK
+                            KTP</label>
+                        <input type="text" id="reg-nik" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition"
+                            placeholder="16 digit Nomor Induk Kependudukan">
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <label for="reg-file-kepegawaian"
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Surat
+                                Kepegawaian / ID Card <span class="text-[10px] text-slate-400 font-medium">(PDF, Maks.
+                                    3MB)</span></label>
+                            <input type="file" id="reg-file-kepegawaian" required accept="application/pdf"
+                                class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-650 dark:file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label for="reg-file-kesanggupan"
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Surat Pernyataan
+                                Kesanggupan <span class="text-[10px] text-slate-400 font-medium">(PDF, Maks.
+                                    3MB)</span></label>
+                            <input type="file" id="reg-file-kesanggupan" required accept="application/pdf"
+                                class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-650 dark:file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label for="reg-file-ktp"
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">KTP Pemohon
+                                <span class="text-[10px] text-slate-400 font-medium">(PDF, Maks. 3MB)</span></label>
+                            <input type="file" id="reg-file-ktp" required accept="application/pdf"
+                                class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-650 dark:file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-3">
+                        <button type="button" onclick="AuthService.logout()"
+                            class="flex-1 bg-slate-200 hover:bg-slate-350 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold py-3 rounded-xl text-sm transition border border-slate-300 dark:border-slate-700">
+                            Batal
+                        </button>
+                        <button type="submit" id="btn-submit-register"
+                            class="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-brand-500/10">
+                            Daftar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. DASHBOARD SCREEN (Sidebar Layout) -->
+        <section id="dashboard-page"
+            class="hidden h-[100dvh] lg:h-screen flex flex-col lg:flex-row relative overflow-hidden">
+
+            <!-- MOBILE NAVBAR (Visible below lg) -->
+            <div
+                class="lg:hidden w-full flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <img src="asset/images/Logo-Berlian-Manyar-Sejahtera.png" alt="BMS Logo" class="h-8 object-contain"
+                        onerror="this.style.display='none';">
+                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200 tracking-tight">Bidding Assets
+                        Internal</span>
+                </div>
+                <!-- Mobile Header Actions (Theme Toggle & Logout) -->
+                <div class="flex items-center gap-2">
+                    <!-- Mobile Theme Toggle Button -->
+                    <button id="theme-toggle-switch-mobile"
+                        class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-350 border border-slate-250 dark:border-slate-800 transition"
+                        title="Ubah Tema">
+                        <!-- Sun icon for dark mode -->
+                        <svg class="hidden dark:block h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 7a5 5 0 110 10 5 5 0 010-10z" />
+                        </svg>
+                        <!-- Moon icon for light mode -->
+                        <svg class="block dark:hidden h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+
+                    <!-- Mobile Logout Button -->
+                    <button onclick="AuthService.logout()"
+                        class="bg-red-500/10 hover:bg-red-500 text-red-650 dark:text-red-400 hover:text-white border border-red-500/20 px-3 py-1.5 rounded-xl transition text-[10px] font-bold flex items-center gap-1">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Keluar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- DESKTOP LEFT SIDEBAR -->
+            <aside id="sidebar-container"
+                class="hidden lg:flex fixed inset-y-0 left-0 w-72 z-40 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800/80 backdrop-blur-xl flex-col justify-between p-6 lg:static lg:h-screen lg:flex-shrink-0 shadow-lg lg:shadow-none">
+                <div class="space-y-6 flex flex-col h-full">
+                    <!-- Sidebar Header / Logo -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="asset/images/Logo-Berlian-Manyar-Sejahtera.png" alt="BMS Logo"
+                                class="h-10 object-contain" onerror="this.style.display='none';">
+                            <span class="text-base font-extrabold text-slate-850 dark:text-slate-100 tracking-tight">BMS
+                                Bidding
+                                Assets Internal</span>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Card -->
+                    <div
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 flex flex-col items-center text-center">
+                        <div class="relative mb-3">
+                            <img id="user-profile-pic" src="" alt="Avatar"
+                                class="w-16 h-16 rounded-full border-2 border-brand-500 shadow-md">
+                            <div id="admin-indicator-badge"
+                                class="hidden absolute -bottom-1 -right-1 bg-brand-500 text-white rounded-full p-1 border border-white dark:border-slate-900"
+                                title="Administrator Role">
+                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M2.166 4.9L10 1.154l7.834 3.746a1 1 0 01.613.92v5.334a10.04 10.04 0 01-5.161 8.73l-3.033 1.637a.5.5 0 01-.506 0l-3.033-1.637a10.04 10.04 0 01-5.16-8.73V5.82a1 1 0 01.613-.92zM9 11a1 1 0 112 0v2a1 1 0 11-2 0v-2zm1-7a1 1 0 100 2 1 1 0 000-2z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h4 id="user-profile-name"
+                            class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">-</h4>
+                        <p id="user-profile-role"
+                            class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 max-w-full truncate">
+                            -</p>
+                    </div>
+
+                    <!-- Sidebar Navigation -->
+                    <div class="flex-grow space-y-2 mt-4">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">Menu
+                            Utama</span>
+
+                        <button onclick="UiService.switchDashboardView('gallery')" id="nav-gallery"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500/10 text-brand-650 dark:text-brand-400 border border-brand-500/20 text-left transition-all">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+                            </svg>
+                            <span>Galeri Aset Lelang</span>
+                        </button>
+
+                        <button onclick="UiService.switchDashboardView('cart')" id="nav-cart"
+                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 border border-transparent text-left transition-all">
+                            <div class="flex items-center gap-3">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>Histori Lelang</span>
+                            </div>
+                            <span id="cart-badge"
+                                class="hidden bg-brand-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">0</span>
+                        </button>
+
+                        <!-- ADMIN QUICK CONTROL PANEL -->
+                        <div id="admin-quick-panel"
+                            class="hidden space-y-2 pt-4 border-t border-slate-200 dark:border-slate-800/80">
+                            <span
+                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">Panel
+                                Administrator</span>
+
+                            <button onclick="UiService.showAddAssetModal()"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/10 transition border border-brand-500/30 text-left">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                <span>Tambah Aset Baru</span>
+                            </button>
+
+                            <button onclick="UiService.switchDashboardView('manage-assets')" id="nav-manage-assets"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 text-left transition-all">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002-2h2a2 2 0 002-2" />
+                                </svg>
+                                <span>Kelola Aset</span>
+                            </button>
+
+                            <button onclick="UiService.switchDashboardView('manage-users')" id="nav-manage-users"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 text-left transition-all">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Kelola Pengguna</span>
+                            </button>
+
+                            <button onclick="UiService.switchDashboardView('system-monitor')" id="nav-system-monitor"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 text-left transition-all">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                                </svg>
+                                <span>Status & Limit Sistem</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Footer Actions (Theme Toggle & Logout) -->
+                    <div class="border-t border-slate-200 dark:border-slate-800/80 pt-4 space-y-4">
+                        <!-- Theme Mode Switch -->
+                        <div
+                            class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80">
+                            <span
+                                class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 7a5 5 0 110 10 5 5 0 010-10z" />
+                                </svg>
+                                Mode Gelap
+                            </span>
+                            <button id="theme-toggle-switch"
+                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-slate-300 dark:bg-brand-500">
+                                <span
+                                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 dark:translate-x-5"></span>
+                            </button>
+                        </div>
+
+                        <!-- Logout -->
+                        <button id="btn-logout"
+                            class="w-full bg-slate-100 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20 text-slate-600 dark:bg-slate-900 dark:hover:bg-red-950/40 dark:hover:text-red-400 dark:hover:border-red-500/30 dark:text-slate-400 border border-slate-250 dark:border-slate-800 px-4 py-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Keluar Sesi
+                        </button>
+                        <div class="text-center text-[9px] text-slate-400 dark:text-slate-500 font-medium pt-1">
+                            App Dev v1.3.0
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT WORKSPACE -->
+            <div class="flex-grow flex flex-col overflow-y-auto z-15">
+                <!-- Content Header / Topbar (Desktop greeting) -->
+                <header
+                    class="hidden lg:flex sticky top-0 z-30 items-center justify-between px-8 py-5 border-b border-slate-250 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+                    <div>
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Dashboard</h2>
+                        <h1 id="dashboard-view-title"
+                            class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-0.5">Sistem
+                            Lelang Internal</h1>
+                    </div>
+
+                    <button id="btn-refresh-assets"
+                        class="bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 dark:bg-slate-900 dark:hover:bg-slate-850 dark:text-slate-350 dark:border-slate-800 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 4.89M9 11l3-3m0 0l3 3m-3-3v8" />
+                        </svg>
+                        Muat Ulang Aset
+                    </button>
+                </header>
+
+                <div class="p-4 pb-28 sm:p-6 lg:p-8 lg:pb-8 space-y-5 lg:space-y-8 max-w-7xl">
+
+                    <!-- STATISTICS PANEL SECTION -->
+                    <div id="stats-panel-section" class="grid grid-cols-3 gap-3 md:gap-6">
+                        <div
+                            class="p-2.5 md:p-5 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 shadow flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4 flex-grow">
+                            <div
+                                class="p-1.5 md:p-3 bg-brand-500/10 text-brand-650 dark:text-brand-400 rounded-xl flex-shrink-0">
+                                <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow w-full">
+                                <span
+                                    class="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-400">Total
+                                    Aset</span>
+                                <div class="flex items-baseline justify-center sm:justify-start gap-1.5">
+                                    <span id="stat-total-assets"
+                                        class="text-xs md:text-2xl font-extrabold text-slate-850 dark:text-slate-100">-</span>
+                                    <span class="text-[8px] md:text-[10px] text-slate-400">terdaftar</span>
+                                </div>
+                                <!-- Breakdown -->
+                                <div
+                                    class="mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-800/60 flex flex-row items-center justify-center sm:justify-start gap-3 text-[9px] md:text-[10.5px] text-slate-500 dark:text-slate-400">
+                                    <span class="flex items-center gap-1">
+                                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                        Akan Datang: <strong id="stat-total-scheduled"
+                                            class="text-slate-750 dark:text-slate-200">-</strong>
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        Selesai: <strong id="stat-total-closed"
+                                            class="text-slate-750 dark:text-slate-200">-</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="p-2.5 md:p-5 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 shadow flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4 flex-grow">
+                            <div
+                                class="p-1.5 md:p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex-shrink-0">
+                                <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow w-full">
+                                <span
+                                    class="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-400">Lelang
+                                    Aktif</span>
+                                <div class="flex items-baseline justify-center sm:justify-start gap-1.5">
+                                    <span id="stat-active-auctions"
+                                        class="text-xs md:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">-</span>
+                                    <span class="text-[8px] md:text-[10px] text-slate-400">berjalan</span>
+                                </div>
+                                <!-- Breakdown -->
+                                <div
+                                    class="mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-800/60 flex flex-row items-center justify-center sm:justify-start gap-3 text-[9px] md:text-[10.5px] text-slate-500 dark:text-slate-400">
+                                    <span class="flex items-center gap-1">
+                                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        Ada Bid: <strong id="stat-active-bidded"
+                                            class="text-slate-750 dark:text-slate-200">-</strong>
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        Belum Ada: <strong id="stat-active-unbidded"
+                                            class="text-slate-750 dark:text-slate-200">-</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="stat-total-bids-card"
+                            class="relative z-20 p-2.5 md:p-6 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 shadow flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4 cursor-pointer group hover:border-brand-500/40 transition-all">
+                            <div
+                                class="p-1.5 md:p-3 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl flex-shrink-0">
+                                <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002-2h2a2 2 0 002-2" />
+                                </svg>
+                            </div>
+                            <div class="flex-grow min-w-0">
+                                <span
+                                    class="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-400">Bid
+                                    Anda</span>
+                                <div class="flex flex-col sm:flex-row items-center gap-1.5 mt-0.5">
+                                    <span id="stat-user-total-bids"
+                                        class="text-xs md:text-2xl font-extrabold text-slate-850 dark:text-slate-100">-</span>
+                                    <span
+                                        class="text-[7px] md:text-[9px] text-slate-400 dark:text-slate-500 font-semibold group-hover:text-brand-500 transition-colors">(Detail)</span>
+                                </div>
+                            </div>
+
+                            <!-- Removed Popover for statistics card -->
+                        </div>
+                    </div>
+
+                    <!-- 3.1. VIEW 1: ACTIVE GALLERY VIEW -->
+                    <div id="view-gallery" class="relative grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div id="assets-section" class="lg:col-span-2 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3
+                                    class="text-sm font-bold text-slate-450 dark:text-slate-400 uppercase tracking-wider">
+                                    Aset Tersedia
+                                </h3>
+
+                                <div class="flex items-center gap-2">
+                                    <!-- Sorting Dropdown -->
+                                    <div class="relative flex items-center">
+                                        <select id="sort-assets-select" onchange="UiService.handleSortAssets()"
+                                            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-350 rounded-xl pl-3 pr-8 py-2 text-[10px] md:text-xs font-semibold cursor-pointer outline-none transition hover:border-brand-500 appearance-none shadow-sm">
+                                            <option value="sisaWaktuAsc">⏱️ Sisa Waktu Terdekat</option>
+                                            <option value="sisaWaktuDesc">⏱️ Sisa Waktu Terlama</option>
+                                            <option value="hargaBukaAsc">💸 Harga Awal Terendah</option>
+                                            <option value="hargaBukaDesc">💸 Harga Awal Tertinggi</option>
+                                            <option value="highestBidDesc">📈 Bid Tertinggi</option>
+                                        </select>
+                                        <!-- Custom Arrow Icon -->
+                                        <span
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[8px]">▼</span>
+                                    </div>
+
+                                    <!-- Layout Toggle Buttons -->
+                                    <div
+                                        class="flex items-center bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-850 gap-0.5 shadow-inner">
+                                        <button id="btn-layout-card" onclick="UiService.toggleLayout('card')"
+                                            class="p-2 rounded-lg transition-all text-brand-650 dark:text-brand-400 bg-white dark:bg-slate-900 shadow-sm"
+                                            title="Tampilan Card">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+                                            </svg>
+                                        </button>
+                                        <button id="btn-layout-list" onclick="UiService.toggleLayout('list')"
+                                            class="p-2 rounded-lg transition-all text-slate-400 hover:text-slate-650 dark:hover:text-slate-200"
+                                            title="Tampilan List">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 6h16M4 12h16M4 18h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Search & Filter Panel -->
+                            <div
+                                class="p-5 rounded-2xl bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/80 shadow-md space-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                                    <!-- Min Price Input -->
+                                    <div>
+                                        <label
+                                            class="block text-[8px] md:text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold">Min
+                                            Harga Buka</label>
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-450 font-bold text-[10px] md:text-xs">Rp</span>
+                                            <input type="text" id="search-asset-min-price"
+                                                oninput="UiService.handleSearchFilter()"
+                                                class="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl pl-8 pr-3 py-2 text-[11px] md:text-xs outline-none transition font-semibold text-slate-800 dark:text-slate-200"
+                                                placeholder="Contoh: 1.000.000">
+                                        </div>
+                                    </div>
+
+                                    <!-- Max Price Input -->
+                                    <div>
+                                        <label
+                                            class="block text-[8px] md:text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold">Max
+                                            Harga Buka</label>
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-450 font-bold text-[10px] md:text-xs">Rp</span>
+                                            <input type="text" id="search-asset-max-price"
+                                                oninput="UiService.handleSearchFilter()"
+                                                class="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl pl-8 pr-3 py-2 text-[11px] md:text-xs outline-none transition font-semibold text-slate-800 dark:text-slate-200"
+                                                placeholder="Contoh: 10.000.000">
+                                        </div>
+                                    </div>
+
+                                    <!-- Search Input -->
+                                    <div>
+                                        <label
+                                            class="block text-[8px] md:text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold">Cari
+                                            Nama Aset</label>
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                                            <input type="text" id="search-asset-name"
+                                                oninput="UiService.handleSearchFilter()"
+                                                class="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl pl-8 pr-3 py-2 text-[11px] md:text-xs outline-none transition text-slate-800 dark:text-slate-200"
+                                                placeholder="Ketik nama...">
+                                        </div>
+                                    </div>
+
+                                    <!-- Category Dropdown -->
+                                    <div>
+                                        <label
+                                            class="block text-[8px] md:text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold">Kategori</label>
+                                        <select id="search-asset-category" onchange="UiService.handleSearchFilter()"
+                                            class="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-2.5 py-2 text-[11px] md:text-xs outline-none transition cursor-pointer text-slate-700 dark:text-slate-300">
+                                            <option value="">Semua Kategori</option>
+                                            <option value="IT & Elektronik">IT & Elektronik</option>
+                                            <option value="Furniture & Peralatan Kantor">Furniture & Peralatan Kantor
+                                            </option>
+                                            <option value="Kendaraan Operasional">Kendaraan Operasional</option>
+                                            <option value="Mesin & Alat Berat">Mesin & Alat Berat</option>
+                                            <option value="Aset Properti">Aset Properti</option>
+                                            <option value="Aset Lain-lain">Aset Lain-lain</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Assets Container -->
+                            <div id="assets-gallery"
+                                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-3 md:gap-6">
+                                <!-- Cards render location -->
+                            </div>
+
+                            <!-- Pagination Container -->
+                            <div id="gallery-pagination"
+                                class="flex justify-center items-center gap-2 mt-8 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                                <!-- Generated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Bidding Form Card (Col 3) -->
+                        <div id="bidding-panel-section"
+                            class="bidding-panel-responsive lg:col-span-1 lg:sticky lg:top-28">
+                            <div
+                                class="p-5 md:p-6 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 shadow-xl space-y-4 backdrop-blur-xl">
+                                <div class="flex justify-between items-center pb-1">
+                                    <h3
+                                        class="text-sm md:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                        <svg class="h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Form Pengajuan Bid
+                                    </h3>
+                                    <button type="button" onclick="UiService.closeMobileBidModal()"
+                                        class="lg:hidden p-1 px-2.5 rounded-lg text-slate-400 hover:text-slate-650 dark:hover:text-white font-extrabold text-xs bg-slate-100 dark:bg-slate-800 transition">
+                                        ✕
+                                    </button>
+                                </div>
+                                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400">Pilih barang lelang
+                                    terbuka, lalu
+                                    masukkan nominal bidding baru yang lebih tinggi.</p>
+
+                                <form id="bid-form" class="space-y-4">
+                                    <!-- Dropdown Asset Select (Searchable Custom UI) -->
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">Aset
+                                            Terbuka</label>
+                                        <div class="relative" id="custom-searchable-select">
+                                            <input type="text" id="bid-asset-search-input" readonly required
+                                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-3 py-3 text-xs outline-none transition cursor-pointer select-none text-left"
+                                                placeholder="-- Pilih Aset Lelang --">
+                                            <!-- Keep the hidden native input so other script APIs still read select.value directly -->
+                                            <input type="hidden" id="bid-asset-select" required>
+
+                                            <!-- Custom Dropdown Panel -->
+                                            <div id="bid-asset-dropdown-panel"
+                                                class="hidden absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-55 divide-y divide-slate-100 dark:divide-slate-850">
+                                                <div class="p-2 sticky top-0 bg-white dark:bg-slate-900 z-10">
+                                                    <input type="text" id="bid-asset-search-query"
+                                                        class="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-800 focus:border-brand-500 rounded-lg px-2.5 py-1.5 text-xs outline-none text-slate-850 dark:text-slate-100"
+                                                        placeholder="Cari aset...">
+                                                </div>
+                                                <div id="bid-asset-options-list"
+                                                    class="divide-y divide-slate-100 dark:divide-slate-850">
+                                                    <!-- Populated dynamically -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bid Helpers Limit Display Info (revealed dynamically) -->
+                                    <div id="bid-limit-info"
+                                        class="hidden p-4 rounded-xl bg-slate-100/50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-900 text-xs space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-500">Harga Buka:</span>
+                                            <span id="info-starting-price"
+                                                class="font-medium text-slate-700 dark:text-slate-300">-</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-500">Kelipatan Bid:</span>
+                                            <span id="info-kelipatan"
+                                                class="font-medium text-slate-700 dark:text-slate-300">-</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-500">Bid Tertinggi:</span>
+                                            <span id="info-highest-bid"
+                                                class="font-bold text-slate-700 dark:text-slate-300">-</span>
+                                        </div>
+                                        <div
+                                            class="border-t border-slate-200 dark:border-slate-800/80 my-2 pt-2 flex justify-between items-center">
+                                            <span class="text-slate-500 dark:text-slate-400 font-medium">Batas Bid
+                                                Minimum:</span>
+                                            <span id="info-min-required" class="font-extrabold text-brand-500">-</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bid Nominal Input -->
+                                    <div>
+                                        <label for="bid-amount"
+                                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wider">Nominal
+                                            Bid (IDR)</label>
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">Rp</span>
+                                            <input type="text" id="bid-amount" required
+                                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl pl-11 pr-4 py-3 text-sm outline-none transition font-semibold"
+                                                placeholder="Contoh: 1.500.000">
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" id="btn-submit-bid"
+                                        class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/10">
+                                        Kirim Penawaran
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3.4. VIEW 4: USER BIDDING HISTORY VIEW -->
+                    <div id="view-cart" class="hidden space-y-6 animate-fade-in">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Histori Penawaran
+                                Anda</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Daftar lengkap riwayat penawaran
+                                (bidding) yang
+                                pernah Anda ajukan beserta nominal dan statusnya.</p>
+                        </div>
+
+                        <div
+                            class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xl backdrop-blur-xl">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
+                                <thead class="bg-slate-50 dark:bg-slate-950/50">
+                                    <tr>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Aset</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Kategori
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Nominal
+                                            Bid Anda
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Waktu
+                                            Pengajuan
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Status Bid
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-bids-table-body"
+                                    class="divide-y divide-slate-200 dark:divide-slate-850">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3.2. VIEW 2: ADMIN MANAGE ASSETS VIEW -->
+                    <div id="view-manage-assets" class="hidden space-y-4 animate-fade-in">
+                        <!-- Sub-tab Navigasi Admin -->
+                        <div
+                            class="flex border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 gap-4 pb-2">
+                            <button onclick="UiService.switchDashboardView('manage-assets')"
+                                class="text-brand-650 dark:text-brand-400 border-b-2 border-brand-500 px-1 py-0.5">Aset</button>
+                            <button onclick="UiService.switchDashboardView('manage-users')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Pengguna</button>
+                            <button onclick="UiService.switchDashboardView('system-monitor')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Status
+                                Sistem</button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Kelola Seluruh Aset
+                            </h3>
+                            <button onclick="UiService.showAddAssetModal()"
+                                class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1 shadow shadow-brand-500/10">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                Tambah Aset Baru
+                            </button>
+                        </div>
+
+                        <!-- Export Rekap Pemenang Section -->
+                        <div class="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-50 to-brand-50/30 dark:from-slate-900/60 dark:to-brand-950/20 border border-slate-200 dark:border-slate-800">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] uppercase font-extrabold text-slate-400 dark:text-slate-500 tracking-widest">Rekap Pemenang Lelang</span>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Export data pemenang dari seluruh aset</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button id="btn-export-winners-csv" onclick="UiService.exportWinnersCSV()"
+                                    class="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-700 dark:text-emerald-400 hover:text-white border border-emerald-500/30 font-bold px-3 py-2 rounded-xl text-xs transition-all duration-200 shadow-sm group">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span>CSV</span>
+                                </button>
+                                <button id="btn-export-winners-pdf" onclick="UiService.exportWinnersPDF()"
+                                    class="flex items-center gap-1.5 bg-brand-500/10 hover:bg-brand-500 text-brand-650 dark:text-brand-400 hover:text-white border border-brand-500/30 font-bold px-3 py-2 rounded-xl text-xs transition-all duration-200 shadow-sm group">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>PDF</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- End Export Rekap Pemenang Section -->
+
+                        <div
+                            class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xl backdrop-blur-xl">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
+                                <thead class="bg-slate-50 dark:bg-slate-950/50">
+                                    <tr>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            ID / Aset
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Kategori
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Harga Buka
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Kelipatan
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Tawaran
+                                            Tertinggi
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Batas
+                                            Waktu</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Status
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-assets-table-body"
+                                    class="divide-y divide-slate-200 dark:divide-slate-850">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3.3. VIEW 3: ADMIN MANAGE USERS VIEW -->
+                    <div id="view-manage-users" class="hidden space-y-4 animate-fade-in">
+                        <!-- Sub-tab Navigasi Admin -->
+                        <div
+                            class="flex border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 gap-4 pb-2">
+                            <button onclick="UiService.switchDashboardView('manage-assets')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Aset</button>
+                            <button onclick="UiService.switchDashboardView('manage-users')"
+                                class="text-brand-650 dark:text-brand-400 border-b-2 border-brand-500 px-1 py-0.5">Pengguna</button>
+                            <button onclick="UiService.switchDashboardView('system-monitor')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Status
+                                Sistem</button>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Kelola Akun Pengguna</h3>
+
+                        <div
+                            class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xl backdrop-blur-xl">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
+                                <thead class="bg-slate-50 dark:bg-slate-950/50">
+                                    <tr>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Nama
+                                            Lengkap</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Email</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            NIP BMS
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            No.
+                                            WhatsApp</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            NIK</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Dokumen (PDF)</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Akses Role
+                                        </th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Status
+                                            Akun</th>
+                                        <th
+                                            class="px-3 md:px-6 py-3 text-left font-bold uppercase tracking-wider text-slate-400">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-table-body"
+                                    class="divide-y divide-slate-200 dark:divide-slate-850">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3.4. VIEW 4: ADMIN SYSTEM MONITOR VIEW -->
+                    <div id="view-system-monitor" class="hidden space-y-4 animate-fade-in">
+                        <!-- Sub-tab Navigasi Admin -->
+                        <div
+                            class="flex border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 gap-4 pb-2">
+                            <button onclick="UiService.switchDashboardView('manage-assets')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Aset</button>
+                            <button onclick="UiService.switchDashboardView('manage-users')"
+                                class="hover:text-slate-650 dark:hover:text-slate-200 px-1 py-0.5">Pengguna</button>
+                            <button onclick="UiService.switchDashboardView('system-monitor')"
+                                class="text-brand-650 dark:text-brand-400 border-b-2 border-brand-500 px-1 py-0.5">Status
+                                Sistem</button>
+                        </div>
+
+                        <div id="system-monitor-content" class="space-y-6">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM FLOATING NAVBAR (iphone-style rounded) -->
+    <div id="mobile-bottom-nav"
+        class="hidden lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-[2.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.18)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200/50 dark:border-slate-800/50 flex justify-around items-center py-2.5 px-4 z-40 transition-all duration-300">
+        <!-- Gallery Tab -->
+        <button onclick="UiService.switchDashboardView('gallery')" id="mobile-nav-gallery"
+            class="flex-1 flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-2xl text-brand-600 dark:text-brand-400 transition-all scale-105 font-bold">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zm10 0a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+            </svg>
+            <span class="text-[9px]">Galeri</span>
+        </button>
+
+        <!-- History Tab -->
+        <button onclick="UiService.switchDashboardView('cart')" id="mobile-nav-cart"
+            class="flex-1 flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-brand-500 transition-all relative">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-[9px]">Histori</span>
+            <span id="mobile-cart-badge"
+                class="hidden absolute top-0.5 right-1.5 bg-brand-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+        </button>
+
+        <!-- Bid Button (Mobile Modal Trigger) -->
+        <button onclick="UiService.openMobileBidModal()" id="mobile-nav-bid"
+            class="flex-1 flex flex-col items-center gap-0.5 py-1 px-1 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-brand-500 transition-all relative">
+            <div
+                class="w-10 h-10 bg-brand-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/25 -mt-6 border-4 border-white dark:border-slate-900 transition-transform active:scale-95">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <span class="text-[9px] mt-0.5 font-semibold">Bid</span>
+        </button>
+
+        <!-- Admin: Manage Assets Tab -->
+        <button onclick="UiService.switchDashboardView('manage-assets')" id="mobile-nav-manage-assets"
+            class="hidden flex-1 flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-brand-500 transition-all">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002-2h2a2 2 0 002-2" />
+            </svg>
+            <span class="text-[9px]">Kelola</span>
+        </button>
+
+        <!-- Admin: Manage Users Tab -->
+        <button onclick="UiService.switchDashboardView('manage-users')" id="mobile-nav-manage-users"
+            class="hidden flex-1 flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-brand-500 transition-all">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-[9px]">Pengguna</span>
+        </button>
+    </div>
+
+    <!-- 4. ADMIN ADD ASSET MODAL DIALOG (WITH FILE COMPRESSION & LIVE PREVIEW) -->
+    <div id="add-asset-modal"
+        class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-md flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-5xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-2xl flex flex-col md:flex-row overflow-hidden animate-fade-in-up">
+
+            <!-- Left side: The Form -->
+            <div
+                class="w-full md:w-3/5 p-6 lg:p-8 overflow-y-auto max-h-[90vh] border-r border-slate-200 dark:border-slate-800/80">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">Tambah Aset Lelang Baru</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Daftarkan aset perusahaan untuk dilelang
+                            secara
+                            internal.</p>
+                    </div>
+                </div>
+
+                <form id="add-asset-form" class="space-y-4" onsubmit="UiService.handleAddAsset(event)">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="new-asset-name"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Nama
+                                Aset</label>
+                            <input type="text" id="new-asset-name" required oninput="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition"
+                                placeholder="Contoh: Laptop ThinkPad X1 Carbon">
+                        </div>
+
+                        <div>
+                            <label for="new-asset-category"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Kategori</label>
+                            <select id="new-asset-category" required onchange="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition cursor-pointer">
+                                <option value="IT & Elektronik">IT & Elektronik</option>
+                                <option value="Furniture & Peralatan Kantor">Furniture & Peralatan Kantor</option>
+                                <option value="Kendaraan Operasional">Kendaraan Operasional</option>
+                                <option value="Mesin & Alat Berat">Mesin & Alat Berat</option>
+                                <option value="Aset Properti">Aset Properti</option>
+                                <option value="Aset Lain-lain">Aset Lain-lain</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="new-asset-id"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">ID
+                                Aset (Opsional)</label>
+                            <input type="text" id="new-asset-id" oninput="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition"
+                                placeholder="Kosongkan untuk acak">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="new-asset-desc"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Deskripsi
+                            Lengkap Aset</label>
+                        <textarea id="new-asset-desc" rows="3" required oninput="UiService.updateAssetPreview()"
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition resize-none"
+                            placeholder="Tuliskan spesifikasi, kelengkapan, dan kondisi fisik aset..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="new-asset-price"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Harga
+                                Buka (IDR)</label>
+                            <input type="text" id="new-asset-price" required oninput="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold"
+                                placeholder="Contoh: 5.000.000">
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1">
+                                <label for="new-asset-kelipatan-type"
+                                    class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Tipe
+                                    Kelipatan</label>
+                                <select id="new-asset-kelipatan-type" onchange="UiService.toggleKelipatanInput('new')"
+                                    class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-3 py-2.5 text-xs outline-none transition cursor-pointer">
+                                    <option value="NONE">Bebas</option>
+                                    <option value="NOMINAL">Nominal Rp</option>
+                                    <option value="PERCENTAGE">Persentase %</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <label for="new-asset-kelipatan-val"
+                                    class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Nilai
+                                    Kelipatan</label>
+                                <input type="text" id="new-asset-kelipatan-val" disabled
+                                    oninput="UiService.updateAssetPreview()"
+                                    class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                                    placeholder="-">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="new-asset-start-time"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Waktu
+                                Mulai Lelang</label>
+                            <input type="datetime-local" id="new-asset-start-time" required
+                                onchange="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition">
+                        </div>
+
+                        <div>
+                            <label for="new-asset-deadline"
+                                class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Deadline
+                                Lelang</label>
+                            <input type="datetime-local" id="new-asset-deadline" required
+                                onchange="UiService.updateAssetPreview()"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold text-brand-600 dark:text-brand-400">Upload
+                            Foto Aset</label>
+                        <div class="flex gap-2 items-center">
+                            <div class="flex-grow">
+                                <input type="file" id="new-asset-files" multiple accept="image/*"
+                                    onchange="UiService.handleImageUpload(event)"
+                                    class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2 text-xs outline-none transition file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-brand-500/20 file:text-brand-650 dark:file:text-brand-400 hover:file:bg-brand-500/30 cursor-pointer">
+                            </div>
+                            <button type="button" onclick="UiService.openCamera('new')"
+                                class="flex items-center justify-center bg-brand-500/10 hover:bg-brand-500/20 text-brand-650 dark:text-brand-400 border border-brand-500/30 rounded-xl p-2.5 transition shrink-0"
+                                title="Ambil Foto Langsung">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Processing state -->
+                        <div id="upload-status"
+                            class="hidden text-[10px] mt-1.5 text-brand-600 dark:text-brand-400 font-bold animate-pulse">
+                            Memproses
+                            gambar...</div>
+                        <!-- Image thumbnails grid preview -->
+                        <div id="image-thumbnails-preview" class="grid grid-cols-5 gap-2 mt-3"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-800/80">
+                        <button type="button" onclick="UiService.hideAddAssetModal()"
+                            class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-5 py-2.5 rounded-xl text-xs transition border border-slate-300 dark:border-slate-700">
+                            Batal
+                        </button>
+                        <button type="submit" id="btn-submit-add-asset"
+                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg shadow-brand-500/10">
+                            Simpan Aset
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right side: Live Preview -->
+            <div class="hidden md:flex w-2/5 bg-slate-50 dark:bg-slate-950/30 p-8 flex-col justify-center items-center">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Pratinjau Live Card</h4>
+                <div class="w-full max-w-sm" id="live-preview-card-container">
+                    <!-- Card preview HTML will inject here dynamically -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 5. USER / ADMIN ASSET DETAIL VIEW MODAL -->
+    <div id="asset-detail-modal"
+        class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-md flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-4xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:max-h-[95vh] animate-fade-in-up">
+            <!-- Carousel Frame -->
+            <div id="detail-carousel-frame"
+                class="w-full md:w-1/2 h-48 sm:h-64 md:h-auto bg-slate-100 dark:bg-slate-950 relative flex items-center justify-center flex-shrink-0">
+                <!-- Image Loader Spinner -->
+                <div id="detail-carousel-loader"
+                    class="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-950 z-10">
+                    <svg class="animate-spin h-8 w-8 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </div>
+                <img id="detail-carousel-img"
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                    alt="Gambar Detail Aset"
+                    class="w-full h-full object-cover md:object-contain opacity-0 transition-opacity duration-300"
+                    onload="const imgLoader = document.getElementById('detail-carousel-loader'); if (imgLoader) imgLoader.classList.add('hidden'); this.classList.remove('opacity-0');"
+                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDAwIDMwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNmMWY1ZjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDAsMTUwKSI+PGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjE4IiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0tMTgsMCBBMTgsMTggMCAwLDEgMCwtMTgiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIj48YW5pbWF0ZVRyYW5zZm9ybSBhdHRyaWJ1dGVOYW1lPSJ0cmFuc2Zvcm0iIHR5cGU9InJvdGF0ZSIgZnJvbT0iMCIgdG89IjM2MCIgZHVyPSIxcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3BhdGg+PC9nPjwvc3ZnPg=='; const errLoader = document.getElementById('detail-carousel-loader'); if (errLoader) errLoader.classList.add('hidden'); this.classList.remove('opacity-0');">
+
+                <!-- Fullscreen Button -->
+                <button onclick="UiService.openFullscreenImage()"
+                    class="absolute top-3 left-3 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow z-10 transition">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                    </svg>
+                </button>
+
+                <!-- Navigation Buttons -->
+                <button onclick="UiService.prevDetailImage()"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-800 dark:text-white rounded-full p-2.5 border border-slate-200 dark:border-slate-800 shadow">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button onclick="UiService.nextDetailImage()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-800 dark:text-white rounded-full p-2.5 border border-slate-200 dark:border-slate-800 shadow">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <!-- Dots indicators -->
+                <div id="detail-carousel-dots"
+                    class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-1.5 bg-white/60 dark:bg-slate-950/40 p-1.5 rounded-full backdrop-blur">
+                </div>
+            </div>
+
+            <!-- Info Details -->
+            <div
+                class="w-full md:w-1/2 p-4 sm:p-6 lg:p-8 flex flex-col justify-between flex-grow overflow-hidden min-h-0">
+                <div class="space-y-4 overflow-y-auto pr-2 flex-grow min-h-0">
+                    <div class="flex justify-between items-start gap-4">
+                        <span id="detail-asset-category"
+                            class="bg-brand-500/10 text-brand-650 dark:text-brand-400 text-xs px-3 py-1.5 rounded-lg border border-brand-500/20 font-bold uppercase tracking-wider font-semibold"></span>
+                        <button onclick="UiService.hideAssetDetailModal()"
+                            class="text-slate-400 hover:text-slate-650 dark:hover:text-white transition">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <h2 id="detail-asset-name"
+                        class="text-xl font-extrabold text-slate-800 dark:text-slate-100 leading-tight">
+                    </h2>
+
+                    <div
+                        class="grid grid-cols-3 gap-2 border-t border-b border-slate-150 dark:border-slate-800/80 py-3">
+                        <div>
+                            <span class="block text-[9px] uppercase font-bold text-slate-400 tracking-wider">Harga
+                                Buka</span>
+                            <span id="detail-asset-starting-price"
+                                class="text-xs font-semibold text-slate-650 dark:text-slate-300"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] uppercase font-bold text-slate-400 tracking-wider">Kelipatan
+                                Bid</span>
+                            <span id="detail-asset-kelipatan"
+                                class="text-xs font-semibold text-slate-650 dark:text-slate-300"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] uppercase font-bold text-slate-400 tracking-wider">Penawaran
+                                Tertinggi</span>
+                            <span id="detail-asset-highest-bid"
+                                class="text-xs font-bold text-brand-500 dark:text-brand-400"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="block text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-1">Deskripsi
+                            Lengkap</span>
+                        <p id="detail-asset-desc"
+                            class="text-xs text-slate-650 dark:text-slate-300 leading-relaxed max-h-40 overflow-y-auto pr-1 select-text">
+                        </p>
+                    </div>
+
+                    <!-- Admin-Only Info Section (Dynamic in JS) -->
+                    <div id="detail-admin-section"
+                        class="hidden mt-4 p-4 bg-brand-50/50 dark:bg-slate-900/40 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2.5 text-slate-600 dark:text-slate-350">
+                        <div
+                            class="font-extrabold text-brand-650 dark:text-brand-400 uppercase tracking-widest text-[9px] mb-1">
+                            Pemenang Sementara (Admin Only)
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Nama:</span>
+                            <span id="detail-admin-winner-name"
+                                class="font-bold text-slate-800 dark:text-slate-100"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">NIP BMS:</span>
+                            <span id="detail-admin-winner-dept"
+                                class="font-semibold text-slate-800 dark:text-slate-100"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">WhatsApp:</span>
+                            <span id="detail-admin-winner-wa"
+                                class="font-semibold text-slate-800 dark:text-slate-100"></span>
+                        </div>
+                        <div
+                            class="flex flex-col sm:flex-row gap-2 border-t border-slate-200 dark:border-slate-850 pt-2.5 mt-2">
+                            <a id="detail-admin-btn-wa" href="#" target="_blank"
+                                class="flex-grow bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1 shadow">
+                                Hubungi WA
+                            </a>
+                            <button id="detail-admin-btn-cancel"
+                                class="flex-grow bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-bold py-2 rounded-xl text-xs border border-red-500/20 transition">
+                                Batalkan Bid
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-150 dark:border-slate-800/80 flex flex-col gap-2 mt-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider"
+                                id="detail-time-header">Batas
+                                Waktu</span>
+                            <span id="detail-asset-time"
+                                class="text-xs font-bold text-slate-850 dark:text-slate-200"></span>
+                        </div>
+                        <button id="btn-detail-action" onclick="UiService.bidFromDetail()"
+                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg shadow-brand-500/10">
+                            Ikut Lelang
+                        </button>
+                    </div>
+                    <div id="detail-absolute-time" class="text-[10px] text-slate-400 mt-1"></div>
+                    <a id="btn-ask-detail" href="#" target="_blank"
+                        class="mt-2 text-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold py-2 rounded-xl text-xs transition border border-slate-250 dark:border-slate-700 w-full flex items-center justify-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Tanyakan Lebih Lanjut
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. ADMIN EDIT ASSET MODAL DIALOG -->
+    <div id="edit-asset-modal"
+        class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-md flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-2xl p-6 lg:p-8 animate-fade-in-up">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">Edit Data Aset</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Ubah rincian informasi aset lelang.</p>
+                </div>
+                <button onclick="UiService.hideEditAssetModal()"
+                    class="text-slate-400 hover:text-slate-650 dark:hover:text-white transition">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="edit-asset-form" class="space-y-4" onsubmit="UiService.handleEditAsset(event)">
+                <input type="hidden" id="edit-asset-id">
+
+                <div>
+                    <label for="edit-asset-name-input"
+                        class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Nama
+                        Aset</label>
+                    <input type="text" id="edit-asset-name-input" required
+                        class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-asset-category-input"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Kategori</label>
+                        <select id="edit-asset-category-input" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition cursor-pointer">
+                            <option value="IT & Elektronik">IT & Elektronik</option>
+                            <option value="Furniture & Peralatan Kantor">Furniture & Peralatan Kantor</option>
+                            <option value="Kendaraan Operasional">Kendaraan Operasional</option>
+                            <option value="Mesin & Alat Berat">Mesin & Alat Berat</option>
+                            <option value="Aset Properti">Aset Properti</option>
+                            <option value="Aset Lain-lain">Aset Lain-lain</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edit-asset-price-input"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Harga
+                            Buka (IDR)</label>
+                        <input type="text" id="edit-asset-price-input" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-1">
+                        <label for="edit-asset-kelipatan-type"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Tipe
+                            Kelipatan</label>
+                        <select id="edit-asset-kelipatan-type" onchange="UiService.toggleKelipatanInput('edit')"
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-3 py-2.5 text-xs outline-none transition cursor-pointer">
+                            <option value="NONE">Bebas</option>
+                            <option value="NOMINAL">Nominal Rp</option>
+                            <option value="PERCENTAGE">Persentase %</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label for="edit-asset-kelipatan-val"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Nilai
+                            Kelipatan</label>
+                        <input type="text" id="edit-asset-kelipatan-val" disabled
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                            placeholder="-">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="edit-asset-desc-input"
+                        class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Deskripsi
+                        Lengkap Aset</label>
+                    <textarea id="edit-asset-desc-input" rows="3" required
+                        class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-asset-start-time-input"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Waktu
+                            Mulai Lelang</label>
+                        <input type="datetime-local" id="edit-asset-start-time-input" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition">
+                    </div>
+                    <div>
+                        <label for="edit-asset-deadline-input"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Deadline
+                            Lelang</label>
+                        <input type="datetime-local" id="edit-asset-deadline-input" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider font-bold text-brand-600 dark:text-brand-400">Ganti
+                        Foto Aset (Opsional)</label>
+                    <div class="flex gap-2 items-center">
+                        <div class="flex-grow">
+                            <input type="file" id="edit-asset-files" multiple accept="image/*"
+                                onchange="UiService.handleEditImageUpload(event)"
+                                class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2 text-xs outline-none transition file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-brand-500/20 file:text-brand-650 dark:file:text-brand-400 hover:file:bg-brand-500/30 cursor-pointer">
+                        </div>
+                        <button type="button" onclick="UiService.openCamera('edit')"
+                            class="flex items-center justify-center bg-brand-500/10 hover:bg-brand-500/20 text-brand-650 dark:text-brand-400 border border-brand-500/30 rounded-xl p-2.5 transition shrink-0"
+                            title="Ambil Foto Langsung">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Processing state -->
+                    <div id="edit-upload-status"
+                        class="hidden text-[10px] mt-1.5 text-brand-600 dark:text-brand-400 font-bold animate-pulse">
+                        Memproses
+                        gambar...</div>
+                    <!-- Image thumbnails grid preview -->
+                    <div id="edit-image-thumbnails-preview" class="grid grid-cols-5 gap-2 mt-3"></div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-800/80">
+                    <button type="button" onclick="UiService.hideEditAssetModal()"
+                        class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-5 py-2.5 rounded-xl text-xs transition border border-slate-300 dark:border-slate-700">
+                        Batal
+                    </button>
+                    <button type="submit" id="btn-submit-edit-asset"
+                        class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg shadow-brand-500/10">
+                        Perbarui Aset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 7. FULLSCREEN IMAGE VIEWER MODAL WITH ZOOM & PAN -->
+    <div id="image-fullscreen-overlay"
+        class="hidden fixed inset-0 z-[70] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 select-none">
+
+        <!-- Header with index and close button -->
+        <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white z-10">
+            <span id="fullscreen-index-indicator"
+                class="text-xs font-semibold bg-slate-900/60 backdrop-blur px-3 py-1 rounded-full border border-slate-800">
+                1 / 1
+            </span>
+            <button onclick="UiService.closeFullscreenImage()"
+                class="bg-slate-900/60 hover:bg-slate-800 backdrop-blur text-white p-2.5 rounded-full border border-slate-800 transition shadow">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Zoom & Drag container -->
+        <div id="fullscreen-zoom-viewport"
+            class="w-full h-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing">
+            <img id="fullscreen-zoom-img" src=""
+                class="max-w-full max-h-full object-contain transition-transform duration-200 ease-out origin-center"
+                style="transform: scale(1) translate(0px, 0px);">
+        </div>
+
+        <!-- Controls at the bottom -->
+        <div
+            class="absolute bottom-6 flex items-center gap-3 bg-slate-900/70 backdrop-blur border border-slate-800 px-4 py-2.5 rounded-2xl shadow z-10">
+            <button onclick="UiService.zoomFullscreen(0.2)" title="Zoom In"
+                class="text-white hover:text-brand-400 p-2 transition">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+            <button onclick="UiService.zoomFullscreen(-0.2)" title="Zoom Out"
+                class="text-white hover:text-brand-400 p-2 transition">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+                </svg>
+            </button>
+            <div class="w-px h-6 bg-slate-800"></div>
+            <button onclick="UiService.resetFullscreenZoom()" title="Reset"
+                class="text-white hover:text-brand-400 p-2 transition">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Timeline Button -->
+    <button id="floating-timeline-btn" onclick="UiService.showTimelineModal()"
+        class="fixed bottom-40 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-white shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 hover:bg-slate-700 border border-slate-700/30 group shadow-lg"
+        title="Lihat Timeline Lelang">
+        <!-- Calendar/Clock SVG Icon -->
+        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <!-- Tooltip -->
+        <span
+            class="absolute right-14 scale-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-semibold text-white transition-all group-hover:scale-100 whitespace-nowrap shadow border border-slate-700/50">
+            Timeline Lelang
+        </span>
+    </button>
+
+    <!-- Floating Support Help Button (Email support link) -->
+    <a id="floating-help-btn" href="#"
+        class="fixed bottom-24 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 hover:bg-brand-600 border border-brand-400/30 group"
+        title="Hubungi Bantuan">
+        <!-- Envelope SVG Icon -->
+        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <!-- Tooltip -->
+        <span
+            class="absolute right-14 scale-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-semibold text-white transition-all group-hover:scale-100 whitespace-nowrap shadow border border-slate-700/50">
+            Hubungi Bantuan
+        </span>
+    </a>
+
+    <!-- CAMERA MODAL FOR CAPTURING PHOTOS -->
+    <div id="camera-modal" style="z-index: 100;"
+        class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-lg flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-850 dark:text-slate-100 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4 text-brand-500">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                        </svg>
+                        Ambil Foto Aset
+                    </h3>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Posisikan aset Anda di tengah kamera</p>
+                </div>
+                <button type="button" onclick="UiService.closeCamera()"
+                    class="text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Camera Body / Viewfinder -->
+            <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover"></video>
+
+                <!-- Camera fallback / loading indicator -->
+                <div id="camera-loading"
+                    class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 text-slate-400 gap-3">
+                    <div class="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-xs">Mengaktifkan kamera...</span>
+                </div>
+            </div>
+
+            <!-- Hidden canvas for capturing frame -->
+            <canvas id="camera-canvas" class="hidden"></canvas>
+
+            <!-- Controls -->
+            <div
+                class="p-5 bg-slate-50 dark:bg-slate-900/60 flex flex-col gap-4 border-t border-slate-200 dark:border-slate-800/80">
+                <div class="flex items-center justify-between gap-4">
+                    <!-- Switch Camera Button -->
+                    <button type="button" id="btn-switch-camera" onclick="UiService.switchCamera()"
+                        class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-250 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        Putar Kamera
+                    </button>
+
+                    <!-- Capture Button -->
+                    <button type="button" onclick="UiService.capturePhoto()"
+                        class="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow-lg shadow-brand-500/25">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        Ambil Foto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. ADMIN EDIT USER MODAL DIALOG (WITH FILE UPLOADS MITIGATION) -->
+    <div id="edit-user-modal" style="z-index: 90;"
+        class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-fade-in-up animate-duration-200">
+
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-slate-150 dark:border-slate-800/80 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-850 dark:text-slate-100 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4 text-brand-500">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        Edit Data & Dokumen Pengguna
+                    </h3>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Koreksi kesalahan data profil atau berkas
+                        PDF bidder</p>
+                </div>
+                <button onclick="UiService.hideEditUserModal()"
+                    class="text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="edit-user-form" onsubmit="UiService.handleEditUserSubmit(event)" class="p-6 space-y-4">
+                <!-- Hidden Email field -->
+                <input type="hidden" id="edit-user-email-hidden">
+
+                <!-- Baris 1: Nama & Email -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-user-name"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Nama
+                            Lengkap</label>
+                        <input type="text" id="edit-user-name" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label for="edit-user-email-display"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Email
+                            (Read Only)</label>
+                        <input type="text" id="edit-user-email-display" readonly
+                            class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-450 outline-none cursor-not-allowed">
+                    </div>
+                </div>
+
+                <!-- Baris 2: NIP, WhatsApp, NIK -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="edit-user-nip"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">NIP
+                            BMS</label>
+                        <input type="text" id="edit-user-nip" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label for="edit-user-whatsapp"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">No.
+                            WhatsApp</label>
+                        <input type="text" id="edit-user-whatsapp" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label for="edit-user-nik"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">NIK
+                            KTP</label>
+                        <input type="text" id="edit-user-nik" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition font-semibold">
+                    </div>
+                </div>
+
+                <!-- Baris 3: Dropdowns (Role & Status) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-user-role"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Hak
+                            Akses (Role)</label>
+                        <select id="edit-user-role" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition cursor-pointer">
+                            <option value="BIDDER">BIDDER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edit-user-status"
+                            class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 uppercase tracking-wider">Status
+                            Akun</label>
+                        <select id="edit-user-status" required
+                            class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-350 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition cursor-pointer">
+                            <option value="PENDING">PENDING</option>
+                            <option value="AKTIF">AKTIF</option>
+                            <option value="BLOKIR">BLOKIR</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- File Upload Area for PDF documents -->
+                <div class="border-t border-slate-150 dark:border-slate-800/80 pt-4 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">Dokumen Registrasi (Maks. 3MB per
+                        berkas, Format PDF)</h4>
+
+                    <div class="space-y-2 text-xs">
+                        <!-- 1. Surat Kepegawaian -->
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-slate-50 dark:bg-slate-950/50 rounded-xl border border-slate-150 dark:border-slate-800">
+                            <div class="flex-1">
+                                <span class="font-semibold block text-slate-700 dark:text-slate-300">Surat Kepegawaian /
+                                    ID Card</span>
+                                <span id="edit-user-doc-kepegawaian-link" class="text-[10px] text-slate-400">Belum ada
+                                    dokumen</span>
+                            </div>
+                            <input type="file" id="edit-user-file-kepegawaian" accept=".pdf"
+                                class="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-slate-200 file:text-slate-700 dark:file:bg-slate-800 dark:file:text-slate-300 hover:file:bg-slate-300 cursor-pointer">
+                        </div>
+
+                        <!-- 2. Surat Kesanggupan -->
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-slate-50 dark:bg-slate-950/50 rounded-xl border border-slate-150 dark:border-slate-800">
+                            <div class="flex-1">
+                                <span class="font-semibold block text-slate-700 dark:text-slate-300">Surat Pernyataan
+                                    Kesanggupan</span>
+                                <span id="edit-user-doc-kesanggupan-link" class="text-[10px] text-slate-400">Belum ada
+                                    dokumen</span>
+                            </div>
+                            <input type="file" id="edit-user-file-kesanggupan" accept=".pdf"
+                                class="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-slate-200 file:text-slate-700 dark:file:bg-slate-800 dark:file:text-slate-300 hover:file:bg-slate-300 cursor-pointer">
+                        </div>
+
+                        <!-- 3. KTP -->
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-slate-50 dark:bg-slate-950/50 rounded-xl border border-slate-150 dark:border-slate-800">
+                            <div class="flex-1">
+                                <span class="font-semibold block text-slate-700 dark:text-slate-300">KTP Pemohon</span>
+                                <span id="edit-user-doc-ktp-link" class="text-[10px] text-slate-400">Belum ada
+                                    dokumen</span>
+                            </div>
+                            <input type="file" id="edit-user-file-ktp" accept=".pdf"
+                                class="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-slate-200 file:text-slate-700 dark:file:bg-slate-800 dark:file:text-slate-300 hover:file:bg-slate-300 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer / Action Buttons -->
+                <div
+                    class="flex items-center justify-end gap-3 border-t border-slate-150 dark:border-slate-800/80 pt-4">
+                    <button type="button" onclick="UiService.hideEditUserModal()"
+                        class="px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition">Batal</button>
+                    <button type="submit" id="btn-submit-edit-user"
+                        class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-2 px-5 rounded-xl text-xs transition shadow-md shadow-brand-500/10">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Initializer Trigger Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof UiService !== 'undefined') {
+                UiService.init();
+            } else {
+                console.error('UiService failed to load.');
+            }
+        });
+    </script>
+</body>
+
+</html>
