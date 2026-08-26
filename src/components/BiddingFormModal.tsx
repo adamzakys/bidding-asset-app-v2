@@ -157,7 +157,7 @@ export const BiddingFormModal: React.FC<BiddingFormModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[12px_12px_24px_#d5d8df,-12px_-12px_24px_#ffffff] dark:shadow-[12px_12px_24px_#0e141d,-12px_-12px_24px_#2e3e59] rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-850 shadow-2xl shadow-slate-950/20 dark:shadow-black/60 rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Pull handle bar for mobile bottom-sheet feel */}
@@ -165,22 +165,16 @@ export const BiddingFormModal: React.FC<BiddingFormModalProps> = ({
 
         <button
           onClick={onClose}
-          className="no-neu absolute top-5 right-5 h-8 w-8 flex items-center justify-center rounded-xl text-slate-500 hover:text-rose-500 bg-slate-200/50 dark:bg-slate-800/50 transition cursor-pointer text-xs font-black hidden sm:flex"
+          className="no-neu absolute top-4 right-4 h-7 w-7 flex items-center justify-center rounded-full text-slate-500 hover:text-rose-500 bg-slate-200/60 dark:bg-slate-800/50 transition cursor-pointer text-[10px] font-black z-10"
         >
           ✕
         </button>
 
-        <div className="flex justify-between items-center pb-3 border-b border-slate-200/40 dark:border-slate-855/40 mb-4">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-200/40 dark:border-slate-855/40 mb-4 pr-10">
           <h3 className="text-sm md:text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
             <Gavel className="text-brand-500" size={18} />
             Form Pengajuan Bid
           </h3>
-          <button
-            onClick={onClose}
-            className="no-neu text-xs font-black text-slate-555 hover:text-rose-500 cursor-pointer sm:hidden bg-transparent px-2 py-1"
-          >
-            Tutup
-          </button>
         </div>
 
         <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4 text-left">

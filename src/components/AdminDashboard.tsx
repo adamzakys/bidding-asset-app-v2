@@ -602,10 +602,10 @@ export const AdminDashboard: React.FC = () => {
       </div>
  
       {/* Tabs Select */}
-      <div className="p-2 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[inset_3px_3px_6px_#c8cbd4,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0e141d,inset_-3px_-3px_6px_#2e3e59] grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="p-2 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[inset_3px_3px_6px_#c8cbd4,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0e141d,inset_-3px_-3px_6px_#2e3e59] grid grid-cols-2 sm:grid-cols-4 gap-2 items-stretch">
         <button
           onClick={() => setActiveTab('users')}
-          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
+          className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer h-full flex items-center justify-center text-center ${
             activeTab === 'users'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -615,7 +615,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('assets')}
-          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
+          className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer h-full flex items-center justify-center text-center ${
             activeTab === 'assets'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -625,7 +625,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('fields')}
-          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
+          className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer h-full flex items-center justify-center text-center ${
             activeTab === 'fields'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -635,7 +635,7 @@ export const AdminDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('monitor')}
-          className={`py-2.5 px-3 sm:px-5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer text-center ${
+          className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer h-full flex items-center justify-center text-center ${
             activeTab === 'monitor'
               ? 'tab-active-neu text-brand-650 dark:text-brand-400 font-bold'
               : 'text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:translate-y-[0.5px]'
@@ -1000,13 +1000,13 @@ export const AdminDashboard: React.FC = () => {
               className="fixed inset-0 z-50 bg-[#1e293b]/70 dark:bg-[#0e141d]/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
               onClick={() => setIsAddModalOpen(false)}
             >
-              <div
-                className="w-full max-w-lg bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[12px_12px_24px_#d5d8df,-12px_-12px_24px_#ffffff] dark:shadow-[12px_12px_24px_#0e141d,-12px_-12px_24px_#2e3e59] rounded-3xl p-8 sm:p-10 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
+               <div
+                className="w-full max-w-lg bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-855 shadow-2xl shadow-slate-955/20 dark:shadow-black/60 rounded-3xl p-8 sm:p-10 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={() => setIsAddModalOpen(false)}
-                  className="btn-neu absolute top-4 right-4 text-slate-500 hover:text-rose-500 transition cursor-pointer text-xs font-black p-2 px-3"
+                  className="no-neu absolute top-4 right-4 h-7 w-7 flex items-center justify-center rounded-full text-slate-500 hover:text-rose-500 bg-slate-200/60 dark:bg-slate-800/50 transition cursor-pointer text-[10px] font-black z-10"
                 >
                   ✕
                 </button>
@@ -1152,12 +1152,12 @@ export const AdminDashboard: React.FC = () => {
               onClick={() => setIsEditModalOpen(false)}
             >
               <div
-                className="w-full max-w-lg bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[12px_12px_24px_#d5d8df,-12px_-12px_24px_#ffffff] dark:shadow-[12px_12px_24px_#0e141d,-12px_-12px_24px_#2e3e59] rounded-3xl p-8 sm:p-10 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
+                className="w-full max-w-lg bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-855 shadow-2xl shadow-slate-955/20 dark:shadow-black/60 rounded-3xl p-8 sm:p-10 relative animate-fade-in-up max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={() => setIsEditModalOpen(false)}
-                  className="btn-neu absolute top-4 right-4 text-slate-500 hover:text-rose-500 transition cursor-pointer text-xs font-black p-2 px-3"
+                  className="no-neu absolute top-4 right-4 h-7 w-7 flex items-center justify-center rounded-full text-slate-500 hover:text-rose-500 bg-slate-200/60 dark:bg-slate-800/50 transition cursor-pointer text-[10px] font-black z-10"
                 >
                   ✕
                 </button>

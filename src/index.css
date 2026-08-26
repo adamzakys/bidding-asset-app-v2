@@ -222,6 +222,40 @@ input:focus, select:focus, textarea:focus {
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.35), inset -3px -3px 6px rgba(255, 255, 255, 0.05) !important;
 }
 
+/* Red Neumorphic Button (danger state) */
+.btn-danger-neu {
+  background-color: #e11d48 !important; /* Rose 600 */
+  color: #ffffff !important;
+  box-shadow: 4px 4px 8px rgba(225, 29, 72, 0.25), -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.15s ease;
+}
+
+.dark .btn-danger-neu {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.btn-danger-neu:hover {
+  box-shadow: 2px 2px 4px rgba(225, 29, 72, 0.35), -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+  transform: translateY(0.5px);
+}
+
+.dark .btn-danger-neu:hover {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+.btn-danger-neu:active, .btn-danger-neu.active {
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(1.5px);
+}
+
+.dark .btn-danger-neu:active, .dark .btn-danger-neu.active {
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.35), inset -3px -3px 6px rgba(255, 255, 255, 0.05) !important;
+}
+
 .tab-active-neu {
   box-shadow: inset 3px 3px 6px #c8cbd4, inset -3px -3px 6px #ffffff !important;
   background-color: rgba(37, 150, 190, 0.08) !important;

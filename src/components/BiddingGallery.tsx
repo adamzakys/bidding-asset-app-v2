@@ -704,13 +704,13 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                         <>
                           <button
                             onClick={(e) => handlePrevImage(e, asset.asset_id, images.length)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="no-neu absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <ChevronLeft size={12} />
                           </button>
                           <button
                             onClick={(e) => handleNextImage(e, asset.asset_id, images.length)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="no-neu absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <ChevronRight size={12} />
                           </button>
@@ -1023,7 +1023,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
           onClick={() => setDetailAssetId(null)}
         >
           <div
-            className="w-full sm:max-w-4xl modal-sheet sm:rounded-3xl sm:modal-dialog bg-[#f1f2f5] dark:bg-[#1e293b] flex flex-col md:flex-row overflow-hidden max-h-[93vh] animate-slide-up-sheet sm:animate-scale-in"
+            className="w-full sm:max-w-4xl modal-sheet sm:rounded-3xl sm:modal-dialog bg-[#f1f2f5] dark:bg-[#1e293b] flex flex-col md:flex-row overflow-hidden max-h-[93vh] animate-slide-up-sheet sm:animate-scale-in border border-white dark:border-slate-855 shadow-2xl shadow-slate-950/20 dark:shadow-black/60"
             onClick={(e) => e.stopPropagation()}
           >
             
