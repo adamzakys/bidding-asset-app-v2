@@ -279,7 +279,7 @@ function App() {
  
             <button
               onClick={handleSignOut}
-              className="btn-danger-neu w-full py-3.5 flex items-center justify-center gap-2 font-bold text-xs cursor-pointer select-none"
+              className="btn-danger-neu w-full py-3 flex items-center justify-center gap-2 font-bold text-xs cursor-pointer select-none"
             >
               <LogOut size={13} strokeWidth={2.5} className="shrink-0" />
               <span className="leading-none mt-0.5">Keluar Sesi</span>

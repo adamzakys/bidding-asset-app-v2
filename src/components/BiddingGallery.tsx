@@ -704,13 +704,13 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                         <>
                           <button
                             onClick={(e) => handlePrevImage(e, asset.asset_id, images.length)}
-                            className="no-neu absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <ChevronLeft size={12} />
                           </button>
                           <button
                             onClick={(e) => handleNextImage(e, asset.asset_id, images.length)}
-                            className="no-neu absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-slate-950/80 hover:bg-slate-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <ChevronRight size={12} />
                           </button>
@@ -1023,7 +1023,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
           onClick={() => setDetailAssetId(null)}
         >
           <div
-            className="w-full sm:max-w-4xl modal-sheet sm:rounded-3xl sm:modal-dialog bg-[#f1f2f5] dark:bg-[#1e293b] flex flex-col md:flex-row overflow-hidden max-h-[93vh] animate-slide-up-sheet sm:animate-scale-in border border-white dark:border-slate-855 shadow-2xl shadow-slate-950/20 dark:shadow-black/60"
+            className="w-full sm:max-w-4xl modal-sheet sm:rounded-3xl sm:modal-dialog bg-[#f1f2f5] dark:bg-[#1e293b] flex flex-col md:flex-row overflow-hidden max-h-[93vh] animate-slide-up-sheet sm:animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             
@@ -1042,7 +1042,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                     {/* Fullscreen Trigger */}
                     <button
                       onClick={() => setFullscreenImgUrl(images[detailImgIdx])}
-                      className="no-neu absolute top-3 left-3 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 z-10 transition cursor-pointer"
+                      className="absolute top-3 left-3 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow z-10 transition cursor-pointer"
                     >
                       <Maximize2 size={14} />
                     </button>
@@ -1052,13 +1052,13 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                       <>
                         <button
                           onClick={() => setDetailImgIdx((prev) => (prev - 1 + images.length) % images.length)}
-                          className="no-neu absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 cursor-pointer transition-all duration-200"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow cursor-pointer transition-all duration-200"
                         >
                           <ChevronLeft size={16} />
                         </button>
                         <button
                           onClick={() => setDetailImgIdx((prev) => (prev + 1) % images.length)}
-                          className="no-neu absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200/30 dark:border-slate-800/30 cursor-pointer transition-all duration-200"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-950 text-slate-850 dark:text-white rounded-full p-2 border border-slate-200 dark:border-slate-800 shadow cursor-pointer transition-all duration-200"
                         >
                           <ChevronRight size={16} />
                         </button>

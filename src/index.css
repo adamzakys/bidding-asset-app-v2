@@ -92,38 +92,31 @@ button, .btn-neu {
   outline: none;
 }
 
-button:not(:disabled):not(.active):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]) {
+button:not(:disabled):not(.active) {
   box-shadow: 4px 4px 8px #d5d8df, -4px -4px 8px #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.dark button:not(:disabled):not(.active):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]) {
+.dark button:not(:disabled):not(.active) {
   box-shadow: 4px 4px 8px #0e141d, -4px -4px 8px #2e3e59;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Suppress shadows on buttons overlaying images or marked with .no-neu */
-.no-neu,
-button.no-neu {
-  box-shadow: none !important;
-  border: none !important;
-}
-
-button:not(:disabled):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]):hover {
+button:not(:disabled):hover {
   box-shadow: 2px 2px 4px #d5d8df, -2px -2px 4px #ffffff;
   transform: translateY(0.5px);
 }
 
-.dark button:not(:disabled):not(.no-neu):not([class*="absolute"]):not([class*="bg-brand-"]):not([class*="rounded-full"]):hover {
+.dark button:not(:disabled):hover {
   box-shadow: 2px 2px 4px #0e141d, -2px -2px 4px #2e3e59;
 }
 
-button:not(:disabled):not(.no-neu):active, button.active:not(.no-neu) {
+button:not(:disabled):active, button.active {
   box-shadow: inset 3px 3px 6px #c8cbd4, inset -3px -3px 6px #ffffff !important;
   transform: translateY(1.5px);
 }
 
-.dark button:not(:disabled):not(.no-neu):active, .dark button.active:not(.no-neu) {
+.dark button:not(:disabled):active, .dark button.active {
   box-shadow: inset 3px 3px 6px #0e141d, inset -3px -3px 6px #2e3e59 !important;
 }
 
@@ -224,22 +217,22 @@ input:focus, select:focus, textarea:focus {
 
 /* Red Neumorphic Button (danger state) */
 .btn-danger-neu {
-  background-color: #e11d48 !important; /* Rose 600 */
+  background-color: #ef4444 !important; /* Tailwind red 500 */
   color: #ffffff !important;
-  box-shadow: 4px 4px 8px rgba(225, 29, 72, 0.25), -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 4px 4px 8px rgba(239, 68, 68, 0.25), -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   transition: all 0.15s ease;
 }
 
 .dark .btn-danger-neu {
-  background-color: #e11d48 !important;
+  background-color: #ef4444 !important;
   color: #ffffff !important;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .btn-danger-neu:hover {
-  box-shadow: 2px 2px 4px rgba(225, 29, 72, 0.35), -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 2px 2px 4px rgba(239, 68, 68, 0.35), -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
   transform: translateY(0.5px);
 }
 
