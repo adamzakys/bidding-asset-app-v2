@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { ActiveBidView } from '../types';
-import { Gavel, Clock, ChevronLeft, ChevronRight, User, AlertCircle, Search, LayoutGrid, List, MessageSquare, Maximize2 } from 'lucide-react';
+import { Gavel, Clock, ChevronLeft, ChevronRight, AlertCircle, Search, LayoutGrid, List, MessageSquare, Maximize2 } from 'lucide-react';
 import gsap from 'gsap';
 
 interface BiddingGalleryProps {
@@ -15,8 +15,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Statistics counters
-  const [userBidsCount, setUserBidsCount] = useState(0);
+
 
   // Layout states
   const [layout, setLayout] = useState<'card' | 'list'>('card');
@@ -107,21 +106,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Fetch functions
-  const fetchUserBidsCount = async () => {
-    try {
-      const { count, error } = await supabase
-        .from('bids')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('status_bid', 'VALID');
-      if (!error && count !== null) {
-        setUserBidsCount(count);
-      }
-    } catch (err) {
-      console.error('Error counting user bids:', err);
-    }
-  };
+
 
   const fetchAssets = async () => {
     try {
@@ -156,7 +141,6 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
   // Main setup logic
   useEffect(() => {
     fetchAssets();
-    fetchUserBidsCount();
     fetchCategories();
 
     const bidsChannel = supabase
@@ -166,7 +150,6 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
         { event: 'INSERT', schema: 'public', table: 'bids' },
         () => {
           fetchAssets();
-          fetchUserBidsCount();
         }
       )
       .on(
@@ -174,7 +157,6 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
         { event: 'UPDATE', schema: 'public', table: 'bids' },
         () => {
           fetchAssets();
-          fetchUserBidsCount();
         }
       )
       .subscribe();
@@ -224,25 +206,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
     }
   }, [assets]);
 
-  // Statistics memoization
-  const stats = useMemo(() => {
-    const total = assets.length;
-    const nowTime = Date.now();
-    const scheduled = assets.filter(a => new Date(a.waktu_selesai).getTime() > nowTime && new Date(a.waktu_selesai).getTime() - nowTime > 3 * 24 * 60 * 60 * 1000).length; // Mock scheduled criteria or status based
-    const closed = assets.filter(a => a.computed_status === 'CLOSED' || a.status_lelang === 'CLOSED').length;
-    const active = assets.filter(a => a.computed_status === 'OPEN' && a.status_lelang === 'OPEN').length;
-    const activeWithBids = assets.filter(a => a.computed_status === 'OPEN' && a.status_lelang === 'OPEN' && a.current_highest_bid > a.harga_buka).length;
-    const activeNoBids = active - activeWithBids;
 
-    return {
-      total,
-      scheduled,
-      closed,
-      active,
-      activeWithBids,
-      activeNoBids
-    };
-  }, [assets]);
 
   // Handle Search & Filter logic
   const filteredAssets = useMemo(() => {
@@ -363,7 +327,6 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
 
       setBidSuccess('Bidding Anda berhasil diajukan!');
       setBidAmount('');
-      fetchUserBidsCount();
       fetchAssets();
 
       setTimeout(() => {
