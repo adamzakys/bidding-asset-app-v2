@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { ShoppingBag, CheckCircle, Ban, Hourglass } from 'lucide-react';
+import { ShoppingBag, CheckCircle, Ban, Hourglass, Gavel, Clock, User } from 'lucide-react';
 
 interface MyBidsProps {
   userId: string;
@@ -22,10 +22,49 @@ export const MyBids: React.FC<MyBidsProps> = ({ userId }) => {
   const [bids, setBids] = useState<UserBidRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [stats, setStats] = useState({ total: 0, active: 0, scheduled: 0, closed: 0, activeWithBids: 0, activeNoBids: 0 });
+  const [totalUserBids, setTotalUserBids] = useState(0);
 
   useEffect(() => {
     fetchMyBids();
+    fetchStats();
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const { data: assetsData, error } = await supabase
+        .from('view_active_bids')
+        .select('*');
+      if (error) throw error;
+
+      const { count: userBidsCount, error: countErr } = await supabase
+        .from('bids')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId);
+      if (countErr) throw countErr;
+
+      setTotalUserBids(userBidsCount || 0);
+
+      const total = assetsData?.length || 0;
+      const nowTime = Date.now();
+      const scheduled = assetsData ? assetsData.filter(a => new Date(a.waktu_selesai).getTime() > nowTime && new Date(a.waktu_selesai).getTime() - nowTime > 3 * 24 * 60 * 60 * 1000).length : 0;
+      const closed = assetsData ? assetsData.filter(a => a.computed_status === 'CLOSED' || a.status_lelang === 'CLOSED').length : 0;
+      const active = assetsData ? assetsData.filter(a => a.computed_status === 'OPEN' && a.status_lelang === 'OPEN').length : 0;
+      const activeWithBids = assetsData ? assetsData.filter(a => a.computed_status === 'OPEN' && a.status_lelang === 'OPEN' && a.current_highest_bid > a.harga_buka).length : 0;
+      const activeNoBids = active - activeWithBids;
+
+      setStats({
+        total,
+        scheduled,
+        closed,
+        active,
+        activeWithBids,
+        activeNoBids
+      });
+    } catch (err) {
+      console.error('Error fetching stats in MyBids:', err);
+    }
+  };
 
   const fetchMyBids = async () => {
     try {
@@ -164,7 +203,78 @@ export const MyBids: React.FC<MyBidsProps> = ({ userId }) => {
         <h2 className="text-2xl font-black text-slate-850 dark:text-white flex items-center gap-2.5 tracking-tight">
           <ShoppingBag className="text-brand-500" size={24} /> Riwayat Penawaran Saya
         </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-450 mt-1">Daftar semua aset yang telah Anda tawarkan sebelumnya</p>
+        <p className="text-xs text-slate-500 dark:text-slate-455 mt-1">Daftar semua aset yang telah Anda tawarkan sebelumnya</p>
+      </div>
+
+      {/* ─── STATISTICS PANEL ─────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-3 md:gap-5">
+        {/* Total Aset */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-brand-500/10 text-brand-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <Gavel size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Total Aset</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{stats.total}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">terdaftar</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Akan Datang: <strong className="text-slate-700 dark:text-slate-200">{stats.scheduled}</strong>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                Selesai: <strong className="text-slate-700 dark:text-slate-200">{stats.closed}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Lelang Aktif */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-emerald-500/10 text-emerald-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <Clock size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Lelang Aktif</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">{stats.active}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">berjalan</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Ada Bid: <strong className="text-slate-700 dark:text-slate-200">{stats.activeWithBids}</strong>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                Belum Ada: <strong className="text-slate-700 dark:text-slate-200">{stats.activeNoBids}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bid Anda */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-amber-500/10 text-amber-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <User size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Bid Anda</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{totalUserBids}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">diajukan</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 text-[8px] md:text-[9.5px] text-slate-500 dark:text-slate-400 uppercase font-semibold tracking-wider">
+              Real-time update
+            </div>
+          </div>
+        </div>
       </div>
  
       {bids.length === 0 ? (

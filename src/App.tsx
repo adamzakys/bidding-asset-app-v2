@@ -7,7 +7,7 @@ import { Profile as UserProfileTab, BlockedUser } from './components/Profile';
 import { BiddingGallery } from './components/BiddingGallery';
 import { MyBids } from './components/MyBids';
 import { AdminDashboard } from './components/AdminDashboard';
-import { LogOut, User, Gavel, ShoppingBag, LayoutDashboard, Shield, Sun, Moon, LayoutGrid } from 'lucide-react';
+import { LogOut, User, Gavel, ShoppingBag, LayoutDashboard, Sun, Moon, LayoutGrid } from 'lucide-react';
 import { BiddingFormModal } from './components/BiddingFormModal';
 
 function App() {
@@ -168,26 +168,7 @@ function App() {
             </div>
           </div>
  
-          {/* User Profile Card */}
-          <div className="p-6 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[6px_6px_12px_#d5d8df,-6px_-6px_12px_#ffffff] dark:shadow-[6px_6px_12px_#0e141d,-6px_-6px_12px_#2e3e59] flex flex-col items-center text-center">
-            <div className="relative mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-brand-500 to-indigo-650 flex items-center justify-center text-white shadow-md font-bold text-xl uppercase border-2 border-brand-500">
-                {profile.nama_lengkap ? profile.nama_lengkap.charAt(0) : profile.email.charAt(0)}
-              </div>
-              <div
-                className="absolute -bottom-1 -right-1 bg-brand-500 text-white rounded-full p-1 border border-white dark:border-slate-900 shadow-sm"
-                title={`${profile.role} Role`}
-              >
-                <Shield size={10} />
-              </div>
-            </div>
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1 w-full">
-              {profile.nama_lengkap}
-            </h4>
-            <p className="text-[10px] font-bold tracking-wider text-slate-500 dark:text-slate-500 uppercase mt-0.5 max-w-full truncate">
-              {profile.role}
-            </p>
-          </div>
+
  
           {/* Sidebar Navigation */}
           <div className="flex-grow space-y-3 mt-4 text-left">
@@ -317,20 +298,24 @@ function App() {
 
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-1.5 p-1 rounded-full transition-all active:scale-95 cursor-pointer border ${
+              className={`flex items-center gap-2.5 p-1.5 pl-3.5 pr-1.5 rounded-full transition-all active:scale-95 cursor-pointer border ${
                 activeTab === 'profile'
                   ? 'bg-brand-500/15 border-brand-500/40'
                   : 'bg-slate-200/40 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-800'
               }`}
               title="Buka Profil Saya"
             >
-              <div className="text-right hidden sm:block pl-1">
+              <div className="text-left hidden sm:block">
                 <span className="block text-[10px] font-bold text-slate-700 dark:text-slate-200 leading-none">{profile.nama_lengkap || 'User'}</span>
-                <span className="text-[7px] font-bold text-slate-455 dark:text-slate-500 uppercase tracking-widest">{profile.role}</span>
+                <span className="text-[7px] font-bold text-slate-455 dark:text-slate-500 uppercase tracking-widest mt-0.5">{profile.role}</span>
               </div>
-              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 pl-2 pr-0.5 uppercase tracking-wider sm:hidden">Profil</span>
-              <div className="h-6 w-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-bold uppercase select-none shadow-sm">
-                {profile.nama_lengkap ? profile.nama_lengkap.charAt(0) : profile.email.charAt(0)}
+              <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 pl-1 uppercase tracking-wider sm:hidden">Profil</span>
+              <div className="h-6 w-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-bold uppercase select-none shadow-sm shrink-0 overflow-hidden">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  profile.nama_lengkap ? profile.nama_lengkap.charAt(0) : profile.email.charAt(0)
+                )}
               </div>
             </button>
           </div>

@@ -227,6 +227,14 @@ BEGIN
     INSERT INTO public.bids (asset_id, user_id, nominal_bid, status_bid)
     VALUES (p_asset_id, auth.uid(), p_nominal, 'VALID');
 
+    -- 7. Anti-sniping / Auto-extend logic
+    -- If bid is placed within 2 minutes of the auction end time, extend it by 2 minutes
+    IF (v_waktu_selesai - now()) < INTERVAL '2 minutes' THEN
+        UPDATE public.assets
+        SET waktu_selesai = now() + INTERVAL '2 minutes'
+        WHERE id = p_asset_id;
+    END IF;
+
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

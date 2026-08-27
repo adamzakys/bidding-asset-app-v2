@@ -34,6 +34,10 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
   const [selectedAssetId, setSelectedAssetId] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownSearch, setDropdownSearch] = useState('');
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   // Bid input state (for Bidding Form on the right)
   const [bidAmount, setBidAmount] = useState('');
@@ -79,6 +83,12 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+        setIsCategoryDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -467,101 +477,69 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
   return (
     <div className="space-y-6 md:space-y-8 text-left relative">
 
-      {/* ─── STATISTICS PANEL ─────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3 md:gap-5">
-        {/* Total Aset */}
-        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
-          <div className="p-2 md:p-3 bg-brand-500/10 text-brand-500 rounded-xl flex-shrink-0"
-            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
-            <Gavel size={18} />
-          </div>
-          <div className="flex-grow w-full">
-            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Total Aset</span>
-            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
-              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{stats.total}</span>
-              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">terdaftar</span>
-            </div>
-            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                Akan Datang: <strong className="text-slate-700 dark:text-slate-200">{stats.scheduled}</strong>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                Selesai: <strong className="text-slate-700 dark:text-slate-200">{stats.closed}</strong>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Lelang Aktif */}
-        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
-          <div className="p-2 md:p-3 bg-emerald-500/10 text-emerald-500 rounded-xl flex-shrink-0"
-            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
-            <Clock size={18} />
-          </div>
-          <div className="flex-grow w-full">
-            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Lelang Aktif</span>
-            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
-              <span className="text-sm md:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">{stats.active}</span>
-              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">berjalan</span>
-            </div>
-            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Ada Bid: <strong className="text-slate-700 dark:text-slate-200">{stats.activeWithBids}</strong>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                Belum Ada: <strong className="text-slate-700 dark:text-slate-200">{stats.activeNoBids}</strong>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Bid Anda */}
-        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
-          <div className="p-2 md:p-3 bg-amber-500/10 text-amber-500 rounded-xl flex-shrink-0"
-            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
-            <User size={18} />
-          </div>
-          <div className="flex-grow w-full">
-            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Bid Anda</span>
-            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
-              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{userBidsCount}</span>
-              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">diajukan</span>
-            </div>
-            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 text-[8px] md:text-[9.5px] text-slate-500 dark:text-slate-400 uppercase font-semibold tracking-wider">
-              Real-time update
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* --- MAIN PAGE CONTENT GRID --- */}
       <div id="view-gallery" className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
 
         {/* Left Side: Search, Filters & Cards Gallery */}
-        <div id="assets-section" className="lg:col-span-2 space-y-4">
+        <div id="assets-section" className={`${isAdmin ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-4`}>
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Aset Tersedia</h3>
             
             <div className="flex items-center gap-2">
-              {/* Sorting Select */}
-              <div className="relative">
-                <select
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value)}
-                  className="text-slate-700 dark:text-slate-200 rounded-xl pl-3 pr-7 py-2 text-[10px] md:text-xs font-semibold cursor-pointer outline-none transition appearance-none"
-                  style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)', background: 'var(--neu-surface)' }}
+              {/* Sorting Select Custom Dropdown */}
+              <div className="relative" ref={sortDropdownRef}>
+                <div
+                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                  className="px-3 md:px-4 py-2 text-slate-855 dark:text-white text-[10px] md:text-xs font-semibold cursor-pointer select-none flex justify-between items-center rounded-xl min-w-[130px] md:min-w-[160px] relative transition-all"
+                  style={{ background: 'var(--neu-surface)', boxShadow: 'inset 1.5px 1.5px 3.5px var(--neu-shadow-dark), inset -1.5px -1.5px 3.5px var(--neu-shadow-light)' }}
                 >
-                  <option value="sisaWaktuAsc">Sisa Waktu Terdekat</option>
-                  <option value="sisaWaktuDesc">Sisa Waktu Terlama</option>
-                  <option value="hargaBukaAsc">Harga Terendah</option>
-                  <option value="hargaBukaDesc">Harga Tertinggi</option>
-                  <option value="highestBidDesc">Bid Tertinggi</option>
-                </select>
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[8px]">▼</span>
+                  <span className="pr-3">
+                    {sortOption === 'sisaWaktuAsc' && 'Sisa Waktu Terdekat'}
+                    {sortOption === 'sisaWaktuDesc' && 'Sisa Waktu Terlama'}
+                    {sortOption === 'hargaBukaAsc' && 'Harga Terendah'}
+                    {sortOption === 'hargaBukaDesc' && 'Harga Tertinggi'}
+                    {sortOption === 'highestBidDesc' && 'Bid Tertinggi'}
+                  </span>
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[8px] text-slate-455 dark:text-slate-500">▼</span>
+                </div>
+
+                {/* Collapsible sorting list */}
+                <div className={`absolute right-0 mt-1.5 w-40 rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white/60 dark:border-slate-800/40 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4)] z-40 overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-in-out grid ${
+                  isSortDropdownOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                }`}>
+                  <div className="overflow-hidden flex flex-col divide-y divide-slate-200/60 dark:divide-slate-850 text-[10px] md:text-xs">
+                    <div
+                      onClick={() => { setSortOption('sisaWaktuAsc'); setIsSortDropdownOpen(false); }}
+                      className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${sortOption === 'sisaWaktuAsc' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                    >
+                      Sisa Waktu Terdekat
+                    </div>
+                    <div
+                      onClick={() => { setSortOption('sisaWaktuDesc'); setIsSortDropdownOpen(false); }}
+                      className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${sortOption === 'sisaWaktuDesc' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                    >
+                      Sisa Waktu Terlama
+                    </div>
+                    <div
+                      onClick={() => { setSortOption('hargaBukaAsc'); setIsSortDropdownOpen(false); }}
+                      className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${sortOption === 'hargaBukaAsc' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                    >
+                      Harga Terendah
+                    </div>
+                    <div
+                      onClick={() => { setSortOption('hargaBukaDesc'); setIsSortDropdownOpen(false); }}
+                      className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${sortOption === 'hargaBukaDesc' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                    >
+                      Harga Tertinggi
+                    </div>
+                    <div
+                      onClick={() => { setSortOption('highestBidDesc'); setIsSortDropdownOpen(false); }}
+                      className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${sortOption === 'highestBidDesc' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                    >
+                      Bid Tertinggi
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Layout togglers */}
@@ -619,47 +597,75 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
             </div>
 
             {/* Collapsible drawer for advanced filters on mobile */}
-            <div className={`${filtersOpen ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-200/30 dark:border-slate-800/20 pt-3.5 mt-2`}>
-              {/* Kategori Select */}
-              <div>
-                <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Kategori</label>
-                <div className="relative">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-2.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200/30 dark:border-slate-800/25 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d] outline-none cursor-pointer appearance-none"
-                  >
-                    <option value="">Semua Kategori</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.name}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[8px]">▼</span>
+            <div className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-in-out ${
+              filtersOpen 
+                ? 'grid-rows-[1fr] opacity-100 mt-2 pt-3.5 border-t border-slate-200/30 dark:border-slate-800/20' 
+                : 'grid-rows-[0fr] opacity-0 md:opacity-100 md:grid-rows-[1fr] overflow-hidden md:overflow-visible'
+            } md:mt-2 md:pt-3.5 md:border-t md:border-slate-200/30 md:dark:border-slate-800/20`}>
+              <div className="overflow-hidden md:overflow-visible grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Kategori Select */}
+                <div>
+                  <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Kategori</label>
+                  <div className="relative">
+                    <div className="relative" ref={categoryDropdownRef}>
+                      <div
+                        onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                        className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl cursor-pointer select-none flex justify-between items-center"
+                        style={{ background: 'var(--neu-surface)', boxShadow: 'inset 1.5px 1.5px 3.5px var(--neu-shadow-dark), inset -1.5px -1.5px 3.5px var(--neu-shadow-light)' }}
+                      >
+                        <span>{selectedCategory || 'Semua Kategori'}</span>
+                        <span className="text-[8px] text-slate-455 dark:text-slate-500">▼</span>
+                      </div>
+
+                      {/* Collapsible Category List */}
+                      <div className={`absolute left-0 right-0 mt-1.5 rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white/60 dark:border-slate-800/40 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4)] z-40 overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-in-out grid ${
+                        isCategoryDropdownOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                      }`}>
+                        <div className="overflow-hidden flex flex-col divide-y divide-slate-200/60 dark:divide-slate-800/40 text-xs max-h-40 overflow-y-auto">
+                          <div
+                            onClick={() => { setSelectedCategory(''); setIsCategoryDropdownOpen(false); }}
+                            className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${selectedCategory === '' ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                          >
+                            Semua Kategori
+                          </div>
+                          {categories.map((cat) => (
+                            <div
+                              key={cat.id}
+                              onClick={() => { setSelectedCategory(cat.name); setIsCategoryDropdownOpen(false); }}
+                              className={`px-3.5 py-2.5 text-left transition cursor-pointer font-semibold hover:bg-brand-500/5 ${selectedCategory === cat.name ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                            >
+                              {cat.name}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Min Harga */}
-              <div>
-                <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Harga (Min)</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: 1.000.000"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200/30 dark:border-slate-800/25 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d] outline-none"
-                />
-              </div>
+                {/* Min Harga */}
+                <div>
+                  <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Harga (Min)</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 1.000.000"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200/30 dark:border-slate-800/25 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d] outline-none"
+                  />
+                </div>
 
-              {/* Max Harga */}
-              <div>
-                <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Harga (Max)</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: 50.000.000"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200/30 dark:border-slate-800/25 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d] outline-none"
-                />
+                {/* Max Harga */}
+                <div>
+                  <label className="block text-[8px] md:text-[10px] font-bold text-slate-455 dark:text-slate-500 mb-1.5 uppercase tracking-wider pl-1">Harga (Max)</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 50.000.000"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200/30 dark:border-slate-800/25 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d] outline-none"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -756,31 +762,33 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                         <div className="flex flex-col sm:flex-row gap-1 sm:gap-1.5">
                           <button
                             onClick={(e) => { e.stopPropagation(); setDetailAssetId(asset.asset_id); setDetailImgIdx(0); }}
-                            className="btn-neu flex-1 py-1.5 text-[9px] sm:text-xs font-black text-center text-slate-700 dark:text-slate-200 cursor-pointer"
+                            className={`btn-neu py-1.5 text-[9px] sm:text-xs font-black text-center text-slate-700 dark:text-slate-200 cursor-pointer ${isAdmin ? 'w-full' : 'flex-1'}`}
                           >
                             Detail
                           </button>
-                          {(!isClosed && !isCancelled && !isScheduled) ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onOpenBidModal && window.innerWidth < 1024) {
-                                  onOpenBidModal(asset.asset_id);
-                                } else {
-                                  handleSelectAssetForBid(asset.asset_id);
-                                }
-                              }}
-                              className="btn-brand-neu flex-1 py-1.5 text-[9px] sm:text-xs font-bold cursor-pointer"
-                            >
-                              Bid
-                            </button>
-                          ) : (
-                            <button
-                              disabled
-                              className="btn-neu flex-1 py-1.5 text-[9px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 opacity-60 cursor-not-allowed"
-                            >
-                              {isAdmin ? 'Admin' : (isScheduled ? 'Mulai' : 'Selesai')}
-                            </button>
+                          {!isAdmin && (
+                            (!isClosed && !isCancelled && !isScheduled) ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onOpenBidModal && window.innerWidth < 1024) {
+                                    onOpenBidModal(asset.asset_id);
+                                  } else {
+                                    handleSelectAssetForBid(asset.asset_id);
+                                  }
+                                }}
+                                className="btn-brand-neu flex-1 py-1.5 text-[9px] sm:text-xs font-bold cursor-pointer"
+                              >
+                                Bid
+                              </button>
+                            ) : (
+                              <button
+                                disabled
+                                className="btn-neu flex-1 py-1.5 text-[9px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 opacity-60 cursor-not-allowed"
+                              >
+                                {isScheduled ? 'Mulai' : 'Selesai'}
+                              </button>
+                            )
                           )}
                         </div>
                       </div>
@@ -804,12 +812,12 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                   <div
                     key={asset.asset_id}
                     onClick={() => { setDetailAssetId(asset.asset_id); setDetailImgIdx(0); }}
-                    className={`neu-card flex flex-row rounded-2xl overflow-hidden transition-all p-3 sm:p-4 gap-3 sm:gap-4 items-center cursor-pointer ${
+                    className={`neu-card flex flex-row rounded-2xl overflow-hidden transition-all p-2.5 sm:p-3 gap-3 items-center cursor-pointer ${
                       isClosed ? 'opacity-75' : ''
                     }`}
                   >
                     {/* Thumbnail Box */}
-                    <div className="relative w-20 h-20 sm:w-28 sm:h-28 overflow-hidden bg-slate-950 rounded-xl flex-shrink-0 group">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 overflow-hidden bg-slate-950 rounded-xl flex-shrink-0 group">
                       <img
                         src={images[currentImgIdx]}
                         alt={asset.nama_aset}
@@ -818,66 +826,66 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                     </div>
 
                     {/* Content Details */}
-                    <div className="flex-grow flex flex-col justify-between min-w-0">
+                    <div className="flex-grow flex flex-col justify-between min-w-0 py-0.5">
                       <div>
                         <div className="flex justify-between items-start gap-1 flex-wrap">
-                          <span className="text-[8px] font-mono font-bold text-brand-600 dark:text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded border border-brand-500/20 uppercase tracking-wider">
+                          <span className="text-[7px] sm:text-[8px] font-mono font-bold text-brand-600 dark:text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded border border-brand-500/20 uppercase tracking-wider">
                             {asset.kode_aset}
                           </span>
-                          <span className="text-[8px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{asset.jenis_aset}</span>
+                          <span className="text-[7px] sm:text-[8px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{asset.jenis_aset}</span>
                         </div>
-                        <h3 className="text-xs sm:text-base font-extrabold text-slate-800 dark:text-white line-clamp-1 mt-1">{asset.nama_aset}</h3>
-                        <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-normal mt-0.5">{asset.deskripsi || 'Tidak ada deskripsi.'}</p>
+                        <h3 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white line-clamp-1 mt-0.5" title={asset.nama_aset}>{asset.nama_aset}</h3>
                       </div>
 
-                      {/* Lower Prices Block */}
-                      <div className="flex items-center justify-between gap-3 mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/40">
-                        <div className="flex gap-4">
-                          <div>
-                            <span className="block text-[8px] uppercase font-bold text-slate-500 dark:text-slate-400">Buka</span>
-                            <span className="text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200">{formatRupiah(asset.harga_buka)}</span>
-                          </div>
-                          <div>
-                            <span className="block text-[8px] uppercase font-bold text-slate-500 dark:text-slate-400">Bid</span>
-                            <span className="text-[10px] sm:text-xs font-bold text-brand-500">
-                              {asset.current_highest_bid > asset.harga_buka || asset.winner_id ? formatRupiah(asset.current_highest_bid) : '-'}
-                            </span>
-                          </div>
+                      {/* Prices Block */}
+                      <div className="flex gap-3 sm:gap-4 mt-2">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[7px] sm:text-[8px] uppercase font-bold text-slate-500 dark:text-slate-400">Buka:</span>
+                          <span className="text-[9px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200">{formatRupiah(asset.harga_buka)}</span>
                         </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[7px] sm:text-[8px] uppercase font-bold text-slate-500 dark:text-slate-400">Bid:</span>
+                          <span className="text-[9px] sm:text-xs font-extrabold text-brand-500">
+                            {asset.current_highest_bid > asset.harga_buka || asset.winner_id ? formatRupiah(asset.current_highest_bid) : '-'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                        <div className="flex items-center gap-1.5">
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-1.5 flex-shrink-0 pl-2 border-l border-slate-200/40 dark:border-slate-800/40 py-1 sm:py-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDetailAssetId(asset.asset_id); setDetailImgIdx(0); }}
+                        className="no-neu bg-[#f1f2f5] dark:bg-[#1e293b] text-slate-700 dark:text-slate-200 font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[9px] sm:text-xs transition border border-slate-200 dark:border-slate-700 cursor-pointer hover:translate-y-[-0.5px]"
+                        style={{ boxShadow: '2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light)', minHeight: 'auto' }}
+                      >
+                        Detail
+                      </button>
+                      {!isAdmin && (
+                        (!isClosed && !isCancelled && !isScheduled) ? (
                           <button
-                            onClick={(e) => { e.stopPropagation(); setDetailAssetId(asset.asset_id); setDetailImgIdx(0); }}
-                            className="no-neu bg-[#f1f2f5] dark:bg-[#1e293b] text-slate-700 dark:text-slate-200 font-bold px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs transition border border-slate-200 dark:border-slate-700 cursor-pointer"
-                            style={{ boxShadow: '2px 2px 5px var(--neu-shadow-dark), -2px -2px 5px var(--neu-shadow-light)', minHeight: 'auto' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onOpenBidModal && window.innerWidth < 1024) {
+                                onOpenBidModal(asset.asset_id);
+                              } else {
+                                handleSelectAssetForBid(asset.asset_id);
+                              }
+                            }}
+                            className="btn-primary bg-brand-500 hover:bg-brand-600 text-white font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[9px] sm:text-xs transition cursor-pointer hover:translate-y-[-0.5px]"
                           >
-                            Detail
+                            Bid
                           </button>
-                          {(!isClosed && !isCancelled && !isScheduled) ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onOpenBidModal && window.innerWidth < 1024) {
-                                  onOpenBidModal(asset.asset_id);
-                                } else {
-                                  handleSelectAssetForBid(asset.asset_id);
-                                }
-                              }}
-                              className="btn-primary bg-brand-500 hover:bg-brand-600 text-white font-bold px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs transition cursor-pointer"
-                            >
-                              Bid
-                            </button>
-                          ) : (
-                            <button
-                              disabled
-                              className="no-neu bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed px-2.5 py-1.5 rounded-lg text-[9px] sm:text-xs font-bold"
-                              style={{ minHeight: 'auto' }}
-                            >
-                              {isAdmin ? 'Admin' : (isScheduled ? 'Belum' : 'Selesai')}
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                        ) : (
+                          <button
+                            disabled
+                            className="no-neu bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[9px] sm:text-xs font-bold"
+                            style={{ minHeight: 'auto' }}
+                          >
+                            {isScheduled ? 'Belum' : 'Selesai'}
+                          </button>
+                        )
+                      )}
                     </div>
                   </div>
                 );
@@ -887,7 +895,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
         </div>
 
         {/* Right Side: Bidding Form Panel */}
-        <div id="bidding-panel-section" className="lg:col-span-1 lg:sticky lg:top-28">
+        <div id="bidding-panel-section" className={isAdmin ? 'hidden' : 'hidden lg:block lg:col-span-1 lg:sticky lg:top-28'}>
           <div className="neu-card p-5 md:p-6 rounded-2xl space-y-4">
             <div className="flex justify-between items-center pb-3 border-b border-slate-200/60 dark:border-slate-700/40">
               <h3 className="text-sm md:text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -912,8 +920,13 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                   <span className="text-[8px] text-slate-400 dark:text-slate-500">▼</span>
                 </div>
 
-                {isDropdownOpen && (
-                  <div className="absolute left-0 right-0 mt-2 max-h-60 overflow-y-auto neu-card rounded-xl shadow-2xl z-50">
+                {/* Collapsible search options list */}
+                <div className={`absolute left-0 right-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden transition-[grid-template-rows,opacity] duration-250 ease-in-out grid ${
+                  isDropdownOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                }`}
+                  style={{ background: 'var(--neu-surface)' }}
+                >
+                  <div className="overflow-hidden max-h-60 overflow-y-auto neu-card">
                     <div className="p-2 sticky top-0 z-10" style={{ background: 'var(--neu-surface)' }}>
                       <input
                         type="text"
@@ -938,7 +951,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                               setBidAmount('');
                               setBidError(null);
                             }}
-                            className="p-3 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-500/5 cursor-pointer flex justify-between items-center"
+                            className="p-3 text-xs font-semibold text-slate-700 dark:text-slate-250 hover:bg-brand-500/5 cursor-pointer flex justify-between items-center"
                           >
                             <span className="truncate pr-2">[{a.kode_aset}] {a.nama_aset}</span>
                             <span className="shrink-0 text-brand-500 text-[10px] font-bold">{formatRupiah(a.current_highest_bid)}</span>
@@ -947,7 +960,7 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                       )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Bidding Limit Displays */}
@@ -1183,28 +1196,30 @@ export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin 
                       {countdowns[detailAsset.asset_id]}
                     </span>
                   </div>
-                  {detailAsset.computed_status === 'OPEN' && detailAsset.status_lelang === 'OPEN' ? (
-                    <button
-                      onClick={() => {
-                        setDetailAssetId(null);
-                        if (onOpenBidModal && window.innerWidth < 1024) {
-                          onOpenBidModal(detailAsset.asset_id);
-                        } else {
-                          handleSelectAssetForBid(detailAsset.asset_id);
-                        }
-                      }}
-                      className="btn-primary bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition cursor-pointer"
-                    >
-                      Ikut Lelang
-                    </button>
-                  ) : (
-                    <button
-                      disabled
-                      className="no-neu bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed px-6 py-2.5 rounded-xl text-xs font-bold"
-                      style={{ minHeight: 'auto' }}
-                    >
-                      Lelang Selesai
-                    </button>
+                  {!isAdmin && (
+                    detailAsset.computed_status === 'OPEN' && detailAsset.status_lelang === 'OPEN' ? (
+                      <button
+                        onClick={() => {
+                          setDetailAssetId(null);
+                          if (onOpenBidModal && window.innerWidth < 1024) {
+                            onOpenBidModal(detailAsset.asset_id);
+                          } else {
+                            handleSelectAssetForBid(detailAsset.asset_id);
+                          }
+                        }}
+                        className="btn-primary bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition cursor-pointer"
+                      >
+                        Ikut Lelang
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="no-neu bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed px-6 py-2.5 rounded-xl text-xs font-bold"
+                        style={{ minHeight: 'auto' }}
+                      >
+                        Lelang Selesai
+                      </button>
+                    )
                   )}
                 </div>
                 

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { Profile as UserProfile, Asset, RegistrationField, ActiveBidView } from '../types';
-import { ShieldCheck, Ban, Trash2, FileText, Settings, Image, Pencil } from 'lucide-react';
+import { ShieldCheck, Ban, Trash2, FileText, Settings, Image, Pencil, Gavel, Clock, Users } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'users' | 'assets' | 'fields' | 'monitor'>('users');
@@ -32,6 +32,12 @@ export const AdminDashboard: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [editAssetImages, setEditAssetImages] = useState<FileList | null>(null);
 
+  // States & Refs for custom category select dropdowns
+  const addAssetCategoryRef = useRef<HTMLDivElement>(null);
+  const editAssetCategoryRef = useRef<HTMLDivElement>(null);
+  const [isAddAssetCategoryOpen, setIsAddAssetCategoryOpen] = useState(false);
+  const [isEditAssetCategoryOpen, setIsEditAssetCategoryOpen] = useState(false);
+
   // Categories states
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -51,6 +57,34 @@ export const AdminDashboard: React.FC = () => {
   const [activeBids, setActiveBids] = useState<ActiveBidView[]>([]);
   const [loadingMonitor, setLoadingMonitor] = useState(true);
 
+  // Memoize admin stats
+  const adminStats = useMemo(() => {
+    const total = assets.length;
+    const now = new Date();
+    
+    // Active auctions
+    const active = assets.filter(a => {
+      const start = new Date(a.waktu_mulai);
+      const end = new Date(a.waktu_selesai);
+      return now >= start && now <= end && a.status_lelang === 'OPEN';
+    }).length;
+    
+    // Scheduled auctions
+    const scheduled = assets.filter(a => new Date(a.waktu_mulai) > now && a.status_lelang === 'OPEN').length;
+    
+    // Closed/finished auctions
+    const closed = assets.filter(a => new Date(a.waktu_selesai) < now || a.status_lelang === 'CLOSED' || a.status_lelang === 'CANCEL').length;
+
+    return {
+      total,
+      active,
+      scheduled,
+      closed,
+      users: users.length,
+      pendingUsers: users.filter(u => u.status_akun === 'PENDING').length
+    };
+  }, [assets, users]);
+
   useEffect(() => {
     fetchUsersAndFields();
     fetchAssets();
@@ -64,6 +98,20 @@ export const AdminDashboard: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Click outside handler for custom category dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addAssetCategoryRef.current && !addAssetCategoryRef.current.contains(event.target as Node)) {
+        setIsAddAssetCategoryOpen(false);
+      }
+      if (editAssetCategoryRef.current && !editAssetCategoryRef.current.contains(event.target as Node)) {
+        setIsEditAssetCategoryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // --- API Fetches ---
@@ -109,131 +157,7 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleExtendAllAuctions = async () => {
-    if (!confirm('Perpanjang semua aset lelang menjadi 7 hari ke depan dan reset status ke OPEN?')) return;
-    setLoadingAssets(true);
-    try {
-      const now = new Date();
-      const nextWeek = new Date();
-      nextWeek.setDate(now.getDate() + 7);
 
-      const { error } = await supabase
-        .from('assets')
-        .update({
-          status_lelang: 'OPEN',
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-        })
-        .neq('id', '00000000-0000-0000-0000-000000000000');
-
-      if (error) throw error;
-      alert('Berhasil memperpanjang semua lelang selama 7 hari!');
-      await fetchAssets();
-    } catch (err: any) {
-      console.error('Error extending auctions:', err);
-      alert('Gagal memperpanjang lelang: ' + err.message);
-    } finally {
-      setLoadingAssets(false);
-    }
-  };
-
-  const handleSeedAssets = async () => {
-    if (!confirm('Seed 6 aset default (aktif hingga 7 hari ke depan) ke database?')) return;
-    setLoadingAssets(true);
-    try {
-      const now = new Date();
-      const nextWeek = new Date();
-      nextWeek.setDate(now.getDate() + 7);
-
-      const defaultAssets = [
-        {
-          kode_aset: 'BMS/DEL/KND/2026/001',
-          jenis_aset: 'Kendaraan Operasional',
-          nama_aset: 'Toyota Hilux Single Cabin',
-          deskripsi: '| L 9853 AR | 2016 | Rusak |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=1OL9upJrIkTmYMdcROXm5SsxdWTZuDXHf&sz=w1000'],
-          harga_buka: 16485000,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 100000
-        },
-        {
-          kode_aset: 'BMS/DEL/KND/2026/002',
-          jenis_aset: 'Kendaraan Operasional',
-          nama_aset: 'Kijang Innova G Diesel Matic',
-          deskripsi: '| L 1402 FA | 2013 | Rusak |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=17qsCTj2H1raMe3me7vtH4cERUAG8F7NQ&sz=w1000'],
-          harga_buka: 62160000,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 100000
-        },
-        {
-          kode_aset: 'BMS/DEL/KND/2026/003',
-          jenis_aset: 'Kendaraan Operasional',
-          nama_aset: 'Kijang lnnova G Diesel Matic',
-          deskripsi: '| L 1530 PM | 2014 | Beroprasi |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=18n5ZAqKyRpzYeGS9kZZHaZPrY52yMyMH&sz=w1000'],
-          harga_buka: 90300000,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 100000
-        },
-        {
-          kode_aset: 'BMS/DEL/IT/2026/001',
-          jenis_aset: 'IT & Elektronik',
-          nama_aset: 'PC Laptop Toshiba Portege R930',
-          deskripsi: '| Tahun 2013 | Rusak |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=19cAPwefglfJByFbCQNGYWc6VJlonz8dH&sz=w1000'],
-          harga_buka: 99750,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 5000
-        },
-        {
-          kode_aset: 'BMS/DEL/IT/2026/002',
-          jenis_aset: 'IT & Elektronik',
-          nama_aset: 'PC Laptop ASUS A46C',
-          deskripsi: '| Tahun 2013 | Rusak |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=1q-kHz9TGFvPTQfDAeI9nTsCdKXt_zrx_&sz=w1000'],
-          harga_buka: 99750,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 5000
-        },
-        {
-          kode_aset: 'BMS/DEL/IT/2026/003',
-          jenis_aset: 'IT & Elektronik',
-          nama_aset: 'PC Laptop Lenovo G400s',
-          deskripsi: '| Tahun 2013 | Rusak |',
-          gambar_url: ['https://drive.google.com/thumbnail?id=17qmDizcLNe0B5xfLmvgQ7wixq1AYWivI&sz=w1000'],
-          harga_buka: 99750,
-          waktu_mulai: now.toISOString(),
-          waktu_selesai: nextWeek.toISOString(),
-          status_lelang: 'OPEN',
-          kelipatan_bid: 5000
-        }
-      ];
-
-      const { error } = await supabase
-        .from('assets')
-        .upsert(defaultAssets, { onConflict: 'kode_aset' });
-
-      if (error) throw error;
-      alert('Berhasil seeding 6 aset default!');
-      await fetchAssets();
-    } catch (err: any) {
-      console.error('Error seeding assets:', err);
-      alert('Gagal seeding: ' + err.message);
-    } finally {
-      setLoadingAssets(false);
-    }
-  };
 
   const toDatetimeLocal = (isoString?: string) => {
     if (!isoString) return '';
@@ -600,6 +524,76 @@ export const AdminDashboard: React.FC = () => {
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-450 mt-1">Verifikasi user, kelola aset, konfigurasi form registrasi, dan pantau bidding lelang</p>
       </div>
+
+      {/* ─── STATISTICS PANEL ─────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-3 md:gap-5">
+        {/* Total Aset */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-brand-500/10 text-brand-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <Gavel size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Total Aset</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{adminStats.total}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">aset</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Akan Datang: <strong className="text-slate-700 dark:text-slate-200">{adminStats.scheduled}</strong>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                Selesai: <strong className="text-slate-700 dark:text-slate-200">{adminStats.closed}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Lelang Aktif */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-emerald-500/10 text-emerald-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <Clock size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Lelang Aktif</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">{adminStats.active}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">berjalan</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Aktif
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Total Pengguna */}
+        <div className="neu-card p-3 md:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 md:gap-4">
+          <div className="p-2 md:p-3 bg-amber-500/10 text-amber-500 rounded-xl flex-shrink-0"
+            style={{ boxShadow: '3px 3px 7px var(--neu-shadow-dark), -3px -3px 7px var(--neu-shadow-light)' }}>
+            <Users size={18} />
+          </div>
+          <div className="flex-grow w-full">
+            <span className="block text-[8px] md:text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Total Pengguna</span>
+            <div className="flex items-baseline justify-center sm:justify-start gap-1.5 mt-0.5">
+              <span className="text-sm md:text-2xl font-extrabold text-slate-800 dark:text-white">{adminStats.users}</span>
+              <span className="text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">terdaftar</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/40 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                Menunggu Verifikasi: <strong className="text-slate-700 dark:text-slate-200">{adminStats.pendingUsers}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
  
       {/* Tabs Select */}
       <div className="p-2 rounded-2xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-white dark:border-slate-800 shadow-[inset_3px_3px_6px_#c8cbd4,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0e141d,inset_-3px_-3px_6px_#2e3e59] grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -853,20 +847,6 @@ export const AdminDashboard: React.FC = () => {
               <h3 className="text-base font-bold text-slate-850 dark:text-white">Katalog Aset Aktif</h3>
               <div className="flex flex-wrap gap-2.5">
                 <button
-                  onClick={handleSeedAssets}
-                  className="btn-neu py-2 px-3.5 text-[10px] font-bold text-slate-700 dark:text-slate-200"
-                  title="Seed default assets for testing"
-                >
-                  ⚡ Seed Aset
-                </button>
-                <button
-                  onClick={handleExtendAllAuctions}
-                  className="btn-neu py-2 px-3.5 text-[10px] font-bold text-slate-700 dark:text-slate-200"
-                  title="Extend all auction end times to 7 days from now"
-                >
-                  ⚡ Perpanjang (7 Hari)
-                </button>
-                <button
                   onClick={() => setIsAddModalOpen(true)}
                   className="btn-brand-neu py-2 px-3.5 text-[10px] font-bold"
                 >
@@ -1029,17 +1009,37 @@ export const AdminDashboard: React.FC = () => {
                         className="w-full bg-[#f1f2f5] dark:bg-[#1e293b] rounded-xl py-2.5 px-3.5 text-xs text-slate-800 dark:text-white outline-none"
                       />
                     </div>
-                    <div>
+                     <div>
                       <label className="block text-[10px] font-bold text-slate-455 dark:text-slate-500 uppercase tracking-widest pl-1 mb-2">Kategori</label>
-                      <select
-                        value={newAsset.jenis_aset}
-                        onChange={(e) => setNewAsset((prev) => ({ ...prev, jenis_aset: e.target.value }))}
-                        className="w-full bg-[#f1f2f5] dark:bg-[#1e293b] rounded-xl py-2.5 px-3.5 text-xs text-slate-800 dark:text-white outline-none"
-                      >
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.name}>{cat.name}</option>
-                        ))}
-                      </select>
+                      <div className="relative" ref={addAssetCategoryRef}>
+                        <div
+                          onClick={() => setIsAddAssetCategoryOpen(!isAddAssetCategoryOpen)}
+                          className="w-full px-3.5 py-2.5 text-xs text-slate-855 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] cursor-pointer select-none flex justify-between items-center border border-slate-200 dark:border-slate-800 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d]"
+                        >
+                          <span>{newAsset.jenis_aset || '-- Pilih Kategori --'}</span>
+                          <span className="text-[8px] text-slate-450 dark:text-slate-500">▼</span>
+                        </div>
+
+                        {/* Collapsible Category List */}
+                        <div className={`absolute left-0 right-0 mt-1.5 rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200 dark:border-slate-800 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4)] z-40 overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-in-out grid ${
+                          isAddAssetCategoryOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                        }`}>
+                          <div className="overflow-hidden flex flex-col divide-y divide-slate-200/60 dark:divide-slate-800/40 text-xs max-h-40 overflow-y-auto">
+                            {categories.map((cat) => (
+                              <div
+                                key={cat.id}
+                                onClick={() => {
+                                  setNewAsset((prev) => ({ ...prev, jenis_aset: cat.name }));
+                                  setIsAddAssetCategoryOpen(false);
+                                }}
+                                className={`p-3 cursor-pointer text-left transition hover:bg-brand-500/5 font-semibold ${newAsset.jenis_aset === cat.name ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                              >
+                                {cat.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
  
@@ -1179,17 +1179,37 @@ export const AdminDashboard: React.FC = () => {
                         className="w-full bg-slate-200 dark:bg-slate-800/50 rounded-xl py-2.5 px-3.5 text-xs text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed border border-slate-300 dark:border-slate-700"
                       />
                     </div>
-                    <div>
+                     <div>
                       <label className="block text-[10px] font-bold text-slate-455 dark:text-slate-500 uppercase tracking-widest pl-1 mb-2">Kategori</label>
-                      <select
-                        value={editingAsset.jenis_aset}
-                        onChange={(e) => setEditingAsset((prev: any) => ({ ...prev, jenis_aset: e.target.value }))}
-                        className="w-full bg-[#f1f2f5] dark:bg-[#1e293b] rounded-xl py-2.5 px-3.5 text-xs text-slate-800 dark:text-white outline-none"
-                      >
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.name}>{cat.name}</option>
-                        ))}
-                      </select>
+                      <div className="relative" ref={editAssetCategoryRef}>
+                        <div
+                          onClick={() => setIsEditAssetCategoryOpen(!isEditAssetCategoryOpen)}
+                          className="w-full px-3.5 py-2.5 text-xs text-slate-855 dark:text-white rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] cursor-pointer select-none flex justify-between items-center border border-slate-200 dark:border-slate-800 shadow-[inset_1px_1px_2px_#c8cbd4] dark:shadow-[inset_1px_1px_2px_#0e141d]"
+                        >
+                          <span>{editingAsset.jenis_aset || '-- Pilih Kategori --'}</span>
+                          <span className="text-[8px] text-slate-450 dark:text-slate-500">▼</span>
+                        </div>
+
+                        {/* Collapsible Category List */}
+                        <div className={`absolute left-0 right-0 mt-1.5 rounded-xl bg-[#f1f2f5] dark:bg-[#1e293b] border border-slate-200 dark:border-slate-800 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4)] z-40 overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-in-out grid ${
+                          isEditAssetCategoryOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                        }`}>
+                          <div className="overflow-hidden flex flex-col divide-y divide-slate-200/60 dark:divide-slate-800/40 text-xs max-h-40 overflow-y-auto">
+                            {categories.map((cat) => (
+                              <div
+                                key={cat.id}
+                                onClick={() => {
+                                  setEditingAsset((prev: any) => ({ ...prev, jenis_aset: cat.name }));
+                                  setIsEditAssetCategoryOpen(false);
+                                }}
+                                className={`p-3 cursor-pointer text-left transition hover:bg-brand-500/5 font-semibold ${editingAsset.jenis_aset === cat.name ? 'text-brand-500 font-extrabold bg-brand-500/5' : 'text-slate-700 dark:text-slate-200'}`}
+                              >
+                                {cat.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

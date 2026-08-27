@@ -23,6 +23,8 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onProfileUpdate }) =>
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
+    setNamaLengkap(profile.nama_lengkap || '');
+    setAvatarUrl(profile.avatar_url || '');
     fetchFields();
     checkOauthAvatar();
   }, [profile]);
@@ -99,6 +101,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onProfileUpdate }) =>
 
       if (updateErr) throw updateErr;
 
+      setAvatarUrl(finalAvatarUrl);
       setSaveSuccess(true);
       setEditing(false);
       setFile(null);
@@ -147,6 +150,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onProfileUpdate }) =>
   };
 
   const currentPhoto = file ? URL.createObjectURL(file) : (avatarUrl || profile.avatar_url);
+  console.log('DEBUG: currentPhoto URL =', currentPhoto);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 text-left">
@@ -349,7 +353,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onProfileUpdate }) =>
               await supabase.auth.signOut();
             }
           }}
-          className="btn-neu w-full py-3.5 hover:text-rose-500 font-bold text-xs"
+          className="btn-neu w-full flex items-center justify-center gap-2 py-3.5 hover:text-rose-500 font-bold text-xs"
         >
           <LogOut size={14} /> Keluar Sesi
         </button>
