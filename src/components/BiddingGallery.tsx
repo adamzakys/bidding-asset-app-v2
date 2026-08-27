@@ -10,7 +10,7 @@ interface BiddingGalleryProps {
   onOpenBidModal?: (assetId: string) => void;
 }
 
-export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId, isAdmin = false, onOpenBidModal }) => {
+export const BiddingGallery: React.FC<BiddingGalleryProps> = ({ userId: _userId, isAdmin = false, onOpenBidModal }) => {
   const [assets, setAssets] = useState<ActiveBidView[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
